@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://oms-portal-backend.vercel.app/api';
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: BASE_URL,
 });
 
 api.interceptors.response.use(
