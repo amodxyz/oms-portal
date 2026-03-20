@@ -34,10 +34,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const setAuth = (data: { token: string; user: User; tenant: Tenant }) => {
-    localStorage.setItem('token', data.token);
-    api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-    setToken(data.token);
+  const setAuth = (data: { accessToken: string; user: User; tenant: Tenant }) => {
+    localStorage.setItem('token', data.accessToken);
+    api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+    setToken(data.accessToken);
     setUser(data.user);
     setTenant(data.tenant);
   };

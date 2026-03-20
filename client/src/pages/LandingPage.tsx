@@ -19,8 +19,8 @@ const plans = [
 ];
 
 const stats = [
-  { value: '10,000+', label: 'Businesses' },
-  { value: '₹500Cr+', label: 'Orders Processed' },
+  { value: 'GST Ready', label: 'Compliant' },
+  { value: 'Multi-tenant', label: 'Architecture' },
   { value: '99.9%', label: 'Uptime' },
   { value: '24/7', label: 'Support' },
 ];
@@ -46,7 +46,7 @@ export default function LandingPage() {
             <button onClick={() => navigate('/login')} className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
               Sign In
             </button>
-            <button onClick={() => navigate('/login')} className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button onClick={() => navigate('/register')} className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Get Started
             </button>
           </div>
@@ -68,13 +68,13 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button onClick={() => navigate('/register')} className="bg-blue-600 text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300">
-              Start Free Trial →
+              Get Started →
             </button>
             <button onClick={() => navigate('/login')} className="bg-white text-gray-700 px-8 py-4 rounded-xl text-base font-semibold border border-gray-200 hover:border-blue-300 hover:text-blue-600 transition-all">
-              View Demo
+              Sign In
             </button>
           </div>
-          <p className="text-xs text-gray-400 mt-4">No credit card required · Free 14-day trial</p>
+          <p className="text-xs text-gray-400 mt-4">No credit card required</p>
         </div>
 
         {/* Hero visual */}
@@ -212,11 +212,11 @@ export default function LandingPage() {
       <section className="py-20 px-6 bg-gradient-to-br from-blue-600 to-blue-800">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to streamline your operations?</h2>
-          <p className="text-blue-200 mb-8">Join thousands of Indian businesses managing orders, inventory, and GST compliance with OMS Portal.</p>
+          <p className="text-blue-200 mb-8">Manage orders, inventory, and GST compliance with OMS Portal — built for Indian businesses.</p>
           <button onClick={() => navigate('/register')} className="bg-white text-blue-700 px-10 py-4 rounded-xl font-bold text-base hover:bg-blue-50 transition-all shadow-lg">
-            Start Free Trial →
+            Get Started →
           </button>
-          <p className="text-blue-300 text-xs mt-4">14-day free trial · No credit card · Cancel anytime</p>
+          <p className="text-blue-300 text-xs mt-4">Create your organisation in seconds</p>
         </div>
       </section>
 
