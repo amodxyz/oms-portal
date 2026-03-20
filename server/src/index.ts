@@ -103,22 +103,24 @@ app.get('/api/health', async (_req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// ── Start server ───────────────────────────────────────
-const server = app.listen(PORT, () => logger.info(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`));
+// ── Start server (skip in serverless/Vercel) ──────────
+if (process.env.NODE_ENV !== 'production') {
+  const server = app.listen(PORT, () => logger.info(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`));
 
-// ── Graceful shutdown ──────────────────────────────────
-const shutdown = async (signal: string) => {
-  logger.info(`${signal} received — shutting down gracefully`);
-  server.close(async () => {
-    await prisma.$disconnect();
-    logger.info('Server closed, DB disconnected');
-    process.exit(0);
-  });
-  setTimeout(() => { logger.error('Forced shutdown after timeout'); process.exit(1); }, 10000);
-};
+  const shutdown = async (signal: string) => {
+    logger.info(`${signal} received — shutting down gracefully`);
+    server.close(async () => {
+      await prisma.$disconnect();
+      logger.info('Server closed, DB disconnected');
+      process.exit(0);
+    });
+    setTimeout(() => { logger.error('Forced shutdown after timeout'); process.exit(1); }, 10000);
+  };
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
 process.on('unhandledRejection', (reason) => { logger.error('Unhandled rejection:', reason); });
 process.on('uncaughtException', (err) => { logger.error('Uncaught exception:', err); process.exit(1); });
 
