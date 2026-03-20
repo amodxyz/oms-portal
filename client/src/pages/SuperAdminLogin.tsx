@@ -17,8 +17,9 @@ export default function SuperAdminLogin() {
       localStorage.setItem('sa_token', data.token);
       localStorage.setItem('sa_admin', JSON.stringify(data.admin));
       navigate('/superadmin/dashboard');
-    } catch {
-      setError('Invalid credentials');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Invalid credentials';
+      setError(`Error: ${msg} (API: ${process.env.REACT_APP_API_URL || '/api'})`);
     } finally {
       setLoading(false);
     }
