@@ -1,0 +1,389 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id              String         @id @default(cuid())
+  name            String
+  slug            String         @unique
+  email           String         @unique
+  phone           String?
+  address         String?
+  gstin           String?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  users           User[]
+  categories      Category[]
+  items           Item[]
+  customers       Customer[]
+  orders          Order[]
+  suppliers       Supplier[]
+  purchaseOrders  PurchaseOrder[]
+  productionOrders ProductionOrder[]
+  inspections     Inspection[]
+  transporters    Transporter[]
+  dispatches      Dispatch[]
+  subscriptions   Subscription[]
+}
+
+model User {
+  id                String         @id @default(cuid())
+  tenantId          String
+  tenant            Tenant         @relation(fields: [tenantId], references: [id])
+  name              String
+  email             String
+  password          String
+  role              String         @default("STAFF")
+  isActive          Boolean        @default(true)
+  emailVerified     Boolean        @default(false)
+  verifyToken       String?
+  verifyTokenExpiry DateTime?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  refreshTokens     RefreshToken[]
+
+  @@unique([tenantId, email])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  name        String
+  description String?
+  items       Item[]
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, name])
+}
+
+model Item {
+  id            String         @id @default(cuid())
+  tenantId      String
+  tenant        Tenant         @relation(fields: [tenantId], references: [id])
+  code          String
+  name          String
+  description   String?
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  unit          String
+  costPrice     Float
+  sellingPrice  Float
+  minStock      Int            @default(0)
+  isActive      Boolean        @default(true)
+  rawMaterial   Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  stockEntries  Stock[]
+  bomItems      BOMItem[]      @relation("BOMParent")
+  bomUsedIn     BOMItem[]      @relation("BOMComponent")
+  orderItems    OrderItem[]
+  purchaseItems PurchaseItem[]
+
+  @@unique([tenantId, code])
+}
+
+model Stock {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  quantity  Float
+  location  String?
+  type      String
+  reference String?
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model BOM {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  items       BOMItem[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model BOMItem {
+  id          String @id @default(cuid())
+  bomId       String
+  bom         BOM    @relation(fields: [bomId], references: [id])
+  parentId    String
+  parent      Item   @relation("BOMParent", fields: [parentId], references: [id])
+  componentId String
+  component   Item   @relation("BOMComponent", fields: [componentId], references: [id])
+  quantity    Float
+  unit        String
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  code      String
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  country   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+
+  @@unique([tenantId, code])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  orderNo     String
+  customerId  String
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  status      String      @default("PENDING")
+  orderDate   DateTime    @default(now())
+  dueDate     DateTime?
+  totalAmount Float
+  discount    Float       @default(0)
+  tax         Float       @default(0)
+  notes       String?
+  items       OrderItem[]
+  invoice     Invoice?
+  dispatch    Dispatch?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([tenantId, orderNo])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id])
+  itemId    String
+  item      Item   @relation(fields: [itemId], references: [id])
+  quantity  Float
+  unitPrice Float
+  total     Float
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  invoiceNo String   @unique
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id])
+  issueDate DateTime @default(now())
+  dueDate   DateTime
+  amount    Float
+  paid      Float    @default(0)
+  status    String   @default("UNPAID")
+  createdAt DateTime @default(now())
+}
+
+model Supplier {
+  id             String          @id @default(cuid())
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  code           String
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  city           String?
+  country        String?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  purchaseOrders PurchaseOrder[]
+
+  @@unique([tenantId, code])
+}
+
+model PurchaseOrder {
+  id           String         @id @default(cuid())
+  tenantId     String
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+  poNo         String
+  supplierId   String
+  supplier     Supplier       @relation(fields: [supplierId], references: [id])
+  status       String         @default("DRAFT")
+  orderDate    DateTime       @default(now())
+  expectedDate DateTime?
+  totalAmount  Float
+  notes        String?
+  items        PurchaseItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([tenantId, poNo])
+}
+
+model PurchaseItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  itemId          String
+  item            Item          @relation(fields: [itemId], references: [id])
+  quantity        Float
+  unitPrice       Float
+  total           Float
+  received        Float         @default(0)
+}
+
+model ProductionOrder {
+  id          String               @id @default(cuid())
+  tenantId    String
+  tenant      Tenant               @relation(fields: [tenantId], references: [id])
+  orderNo     String
+  productName String
+  quantity    Float
+  unit        String
+  startDate   DateTime
+  endDate     DateTime?
+  status      String               @default("PLANNED")
+  priority    String               @default("NORMAL")
+  assignedTo  String?
+  notes       String?
+  resources   ProductionResource[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([tenantId, orderNo])
+}
+
+model ProductionResource {
+  id                String          @id @default(cuid())
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  resourceName      String
+  resourceType      String
+  quantity          Float
+  unit              String
+}
+
+model Inspection {
+  id          String           @id @default(cuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  refNo       String
+  type        String
+  referenceId String?
+  inspector   String
+  date        DateTime         @default(now())
+  status      String           @default("PENDING")
+  notes       String?
+  items       InspectionItem[]
+  createdAt   DateTime         @default(now())
+
+  @@unique([tenantId, refNo])
+}
+
+model InspectionItem {
+  id           String     @id @default(cuid())
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id])
+  parameter    String
+  expected     String
+  actual       String?
+  passed       Boolean?
+  remarks      String?
+}
+
+model Transporter {
+  id         String     @id @default(cuid())
+  tenantId   String
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  code       String
+  name       String
+  phone      String?
+  email      String?
+  vehicle    String?
+  isActive   Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+  dispatches Dispatch[]
+
+  @@unique([tenantId, code])
+}
+
+model Plan {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  price         Float
+  billingCycle  String         @default("MONTHLY")
+  features      String
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id             String          @id @default(cuid())
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  planId         String
+  plan           Plan            @relation(fields: [planId], references: [id])
+  status         String          @default("ACTIVE")
+  startDate      DateTime        @default(now())
+  endDate        DateTime?
+  autoRenew      Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  billingRecords BillingRecord[]
+}
+
+model BillingRecord {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  invoiceNo      String       @unique
+  amount         Float
+  tax            Float        @default(0)
+  total          Float
+  status         String       @default("UNPAID")
+  dueDate        DateTime
+  paidDate       DateTime?
+  paymentMethod  String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+}
+
+model Dispatch {
+  id            String      @id @default(cuid())
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  dispatchNo    String
+  orderId       String      @unique
+  order         Order       @relation(fields: [orderId], references: [id])
+  transporterId String
+  transporter   Transporter @relation(fields: [transporterId], references: [id])
+  status        String      @default("PENDING")
+  dispatchDate  DateTime    @default(now())
+  deliveryDate  DateTime?
+  trackingNo    String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([tenantId, dispatchNo])
+}
