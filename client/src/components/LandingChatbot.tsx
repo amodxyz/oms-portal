@@ -1,32 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://oms-portal-backend.vercel.app/api';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
-
-const OLLAMA_API = 'https://api.ollama.ai/api/chat';
-const OLLAMA_KEY = '2fd0e3eb578a480b9ae8a304bb6c8fff.X0wvpoZPTkqX1KXYxFMLK-2e';
-
-const SYSTEM = `You are a helpful sales assistant for OMS Portal — a GST-ready Order Management System built for Indian businesses.
-
-OMS Portal features:
-- Inventory & stock management with low-stock alerts
-- Sales orders, GST invoices (CGST/SGST/IGST), customer management
-- Purchase orders & supplier management
-- Production scheduling & resource allocation
-- Quality control inspections
-- Logistics, dispatch & tracking
-- Day book, inventory & analytics reports
-- Multi-tenant SaaS with role-based access (Admin, Manager, Staff)
-- Refresh token auth, email verification, password reset
-
-Pricing:
-- Starter: ₹29/mo — 5 users, 1,000 orders/mo
-- Professional: ₹79/mo — 25 users, 10,000 orders/mo, GST reports
-- Enterprise: ₹199/mo — unlimited users & orders, API access
-
-Answer questions about OMS Portal features, pricing, GST compliance, and onboarding. Be concise and friendly.`;
 
 export default function LandingChatbot() {
   const [open, setOpen] = useState(false);
@@ -52,22 +31,13 @@ export default function LandingChatbot() {
     setLoading(true);
 
     try {
-      const res = await fetch(OLLAMA_API, {
+      const res = await fetch(`${BASE_URL}/chatbot/public`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OLLAMA_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'llama3',
-          messages: [{ role: 'system', content: SYSTEM }, ...updated],
-          stream: false,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updated }),
       });
-
       const data = await res.json();
-      const reply = data.message?.content || data.choices?.[0]?.message?.content || 'Sorry, I couldn\'t get a response.';
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'Sorry, no response received.' }]);
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I\'m having trouble connecting. Please try again.' }]);
     } finally {

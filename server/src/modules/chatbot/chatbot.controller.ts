@@ -5,6 +5,43 @@ const OLLAMA_API = 'https://api.ollama.ai/api/chat';
 const OLLAMA_KEY = '2fd0e3eb578a480b9ae8a304bb6c8fff.X0wvpoZPTkqX1KXYxFMLK-2e';
 const MODEL = 'llama3';
 
+const SYSTEM_PUBLIC = `You are a helpful sales assistant for OMS Portal — a GST-ready Order Management System built for Indian businesses.
+
+Features: inventory management, sales orders, GST invoices (CGST/SGST/IGST), purchase orders, production scheduling, quality control, logistics & dispatch, analytics reports, multi-tenant SaaS with role-based access.
+
+Pricing:
+- Starter: ₹29/mo — 5 users, 1,000 orders/mo
+- Professional: ₹79/mo — 25 users, 10,000 orders/mo, GST reports
+- Enterprise: ₹199/mo — unlimited users & orders, API access
+
+Answer questions about features, pricing, GST compliance, and onboarding. Be concise and friendly.`;
+
+export const publicChat = async (req: Request, res: Response) => {
+  const { messages } = req.body as { messages: { role: string; content: string }[] };
+
+  if (!messages?.length) {
+    return res.status(400).json({ message: 'messages array is required' });
+  }
+
+  const response = await fetch(OLLAMA_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OLLAMA_KEY}` },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [{ role: 'system', content: SYSTEM_PUBLIC }, ...messages],
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    return res.status(502).json({ message: 'AI service error', detail: err });
+  }
+
+  const data = await response.json() as any;
+  res.json({ reply: data.message?.content || data.choices?.[0]?.message?.content || 'No response from AI' });
+};
+
 export const chat = async (req: Request, res: Response) => {
   const { messages } = req.body as { messages: { role: string; content: string }[] };
   const tenantId = (req as any).user.tenantId;
