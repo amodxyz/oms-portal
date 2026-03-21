@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import LandingChatbot from '../components/LandingChatbot';
 
 const features = [
   { icon: '📦', title: 'Inventory & Items', desc: 'Manage stock, categories, BOM, and raw materials in real-time.' },
@@ -219,6 +220,8 @@ export default function LandingPage() {
           <p className="text-blue-300 text-xs mt-4">Create your organisation in seconds</p>
         </div>
       </section>
+
+      <LandingChatbot />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-10 px-6">
