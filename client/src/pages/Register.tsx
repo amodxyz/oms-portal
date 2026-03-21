@@ -68,6 +68,11 @@ export default function Register() {
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 font-medium hover:underline">Sign in</Link>
         </p>
+        <p className="text-center text-xs text-gray-400 mt-3">
+          By registering, you agree to our{' '}
+          <Link to="/terms" className="text-blue-500 hover:underline">Terms of Use</Link>{' '}and{' '}
+          <Link to="/privacy-policy" className="text-blue-500 hover:underline">Privacy Policy</Link>
+        </p>
       </div>
     </div>
   );
