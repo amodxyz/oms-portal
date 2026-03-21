@@ -4,7 +4,7 @@ export type PurchaseStatus = 'DRAFT' | 'SENT' | 'RECEIVED' | 'CANCELLED';
 export type InspectionStatus = 'PENDING' | 'PASSED' | 'FAILED';
 export type DispatchStatus = 'PENDING' | 'IN_TRANSIT' | 'DELIVERED' | 'RETURNED';
 
-export interface User { id: string; name: string; email: string; role: Role; tenantId: string; isActive?: boolean; createdAt?: string; }
+export interface User { id: string; name: string; email: string; role: Role; tenantId: string; emailVerified?: boolean; isActive?: boolean; createdAt?: string; }
 export interface Category { id: string; name: string; description?: string; _count?: { items: number }; }
 export interface Item { id: string; code: string; name: string; description?: string; categoryId: string; category: Category; unit: string; costPrice: number; sellingPrice: number; minStock: number; isActive: boolean; rawMaterial: boolean; createdAt: string; }
 export interface StockEntry { id: string; itemId: string; quantity: number; type: 'IN' | 'OUT' | 'ADJUSTMENT'; location?: string; reference?: string; note?: string; createdAt: string; }

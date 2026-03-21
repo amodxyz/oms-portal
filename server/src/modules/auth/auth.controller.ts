@@ -1,17 +1,22 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import crypto from 'crypto';
 import prisma from '../../utils/prisma';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../../utils/email';
 
 // ── Token helpers ──────────────────────────────────────
-const signAccess = (payload: { id: string; role: string; email: string; tenantId: string }) =>
-  jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRES_IN || '15m' });
+const signAccess = (payload: { id: string; role: string; email: string; tenantId: string }) => {
+  const opts: SignOptions = { expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as SignOptions['expiresIn'] };
+  return jwt.sign(payload, process.env.JWT_SECRET!, opts);
+};
 
-const signRefresh = (userId: string) =>
-  jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30}d` });
+const signRefresh = (userId: string) => {
+  const days = Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30);
+  const opts: SignOptions = { expiresIn: days * 24 * 60 * 60 };
+  return jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET!, opts);
+};
 
 const randomToken = () => crypto.randomBytes(32).toString('hex');
 

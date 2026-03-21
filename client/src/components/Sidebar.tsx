@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 interface NavItem { label: string; path?: string; icon: string; children?: { label: string; path: string; icon: string }[]; }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', path: '/', icon: '📊' },
+  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
   {
     label: 'Items', icon: '📦',
     children: [
@@ -106,6 +106,11 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <aside className="w-64 min-h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-40">
       <div className="p-6 border-b border-white/10">
@@ -134,7 +139,7 @@ export default function Sidebar() {
         </div>
         <div className="flex gap-2">
           <button onClick={() => navigate('/profile')} className="flex-1 text-xs text-gray-400 hover:text-white py-1.5 rounded-lg hover:bg-white/10 transition-colors">Profile</button>
-          <button onClick={logout} className="flex-1 text-xs text-gray-400 hover:text-red-400 py-1.5 rounded-lg hover:bg-white/10 transition-colors">Logout</button>
+          <button onClick={handleLogout} className="flex-1 text-xs text-gray-400 hover:text-red-400 py-1.5 rounded-lg hover:bg-white/10 transition-colors">Logout</button>
         </div>
       </div>
     </aside>

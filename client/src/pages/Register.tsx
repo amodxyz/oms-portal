@@ -16,8 +16,8 @@ export default function Register() {
     if (!form.orgName || !form.email || !form.password) return setError('Organisation name, email and password are required');
     setLoading(true); setError('');
     try {
-      await register(form.orgName, form.email, form.password, form.phone, form.gstin);
-      navigate('/dashboard');
+      const result = await register(form.orgName, form.email, form.password, form.phone, form.gstin);
+      navigate('/dashboard', { state: { notice: result.message } });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg || 'Registration failed');
