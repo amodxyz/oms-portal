@@ -34,7 +34,7 @@ const setRefreshCookie = (res: Response, token: string) => {
 // ── Register ───────────────────────────────────────────
 export const register = async (req: Request, res: Response) => {
   const { orgName, email, password, phone, gstin } = req.body;
-  const slug = orgName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') + '-' + Date.now();
+  const slug = orgName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 50) + '-' + Date.now();
 
   const existing = await prisma.tenant.findUnique({ where: { email } });
   if (existing) return res.status(400).json({ message: 'An organisation with this email already exists' });

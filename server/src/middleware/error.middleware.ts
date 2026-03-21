@@ -20,7 +20,6 @@ export const errorHandler = (err: AppError, req: Request, res: Response, _next: 
 
   res.status(statusCode).json({
     message: err.isOperational ? err.message : 'Internal server error',
-    ...(isProduction ? {} : { stack: err.stack }),
   });
 };
 

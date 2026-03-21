@@ -73,7 +73,26 @@ export const forgotPasswordRules = [
   body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
 ];
 
-export const resetPasswordRules = [
-  body('token').notEmpty().withMessage('Token is required'),
-  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+export const updateProfileRules = [
+  body('name').optional().trim().notEmpty().isLength({ max: 100 }).withMessage('Name must be 1-100 characters'),
+  body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+];
+
+export const updateTenantRules = [
+  body('name').optional().trim().notEmpty().isLength({ max: 100 }),
+  body('phone').optional().trim().isLength({ max: 20 }),
+  body('address').optional().trim().isLength({ max: 255 }),
+  body('gstin').optional().trim().isLength({ max: 20 }),
+];
+
+export const updateUserRules = [
+  body('name').optional().trim().notEmpty().isLength({ max: 100 }),
+  body('role').optional().isIn(['ADMIN', 'MANAGER', 'STAFF']).withMessage('Invalid role'),
+  body('isActive').optional().isBoolean(),
+];
+
+export const chatMessageRules = [
+  body('messages').isArray({ min: 1, max: 50 }).withMessage('messages must be an array of 1-50 items'),
+  body('messages.*.role').isIn(['user', 'assistant']).withMessage('Invalid message role'),
+  body('messages.*.content').trim().notEmpty().isLength({ max: 2000 }).withMessage('Message content too long'),
 ];
