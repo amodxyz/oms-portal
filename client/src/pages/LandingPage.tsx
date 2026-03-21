@@ -42,10 +42,14 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
             <a href="#stats" className="hover:text-blue-600 transition-colors">About</a>
+            <button onClick={() => navigate('/book-demo')} className="hover:text-blue-600 transition-colors">Book Demo</button>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/login')} className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
               Sign In
+            </button>
+            <button onClick={() => navigate('/book-demo')} className="text-sm border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium">
+              Book Demo
             </button>
             <button onClick={() => navigate('/register')} className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Get Started
@@ -232,8 +236,9 @@ export default function LandingPage() {
           </div>
           <p className="text-sm">© {new Date().getFullYear()} OMS Portal. Built for Indian businesses.</p>
           <div className="flex gap-6 text-sm">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <button onClick={() => navigate('/features')} className="hover:text-white transition-colors">Features</button>
+            <button onClick={() => navigate('/pricing')} className="hover:text-white transition-colors">Pricing</button>
+            <button onClick={() => navigate('/book-demo')} className="hover:text-white transition-colors">Book Demo</button>
             <button onClick={() => navigate('/login')} className="hover:text-white transition-colors">Login</button>
           </div>
         </div>
