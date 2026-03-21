@@ -229,17 +229,49 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-10 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">O</div>
-            <span className="text-white font-semibold">OMS Portal</span>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">O</div>
+                <span className="text-white font-semibold">OMS Portal</span>
+              </div>
+              <p className="text-xs text-gray-500">GST-ready Order Management System built for Indian businesses.</p>
+            </div>
+            <div>
+              <div className="text-white text-sm font-semibold mb-3">Product</div>
+              <div className="space-y-2 text-sm">
+                <button onClick={() => navigate('/features')} className="block hover:text-white transition-colors">Features</button>
+                <button onClick={() => navigate('/pricing')} className="block hover:text-white transition-colors">Pricing</button>
+                <button onClick={() => navigate('/book-demo')} className="block hover:text-white transition-colors">Book Demo</button>
+              </div>
+            </div>
+            <div>
+              <div className="text-white text-sm font-semibold mb-3">Account</div>
+              <div className="space-y-2 text-sm">
+                <button onClick={() => navigate('/login')} className="block hover:text-white transition-colors">Sign In</button>
+                <button onClick={() => navigate('/register')} className="block hover:text-white transition-colors">Register</button>
+                <button onClick={() => navigate('/forgot-password')} className="block hover:text-white transition-colors">Reset Password</button>
+              </div>
+            </div>
+            <div>
+              <div className="text-white text-sm font-semibold mb-3">Legal</div>
+              <div className="space-y-2 text-sm">
+                <button onClick={() => navigate('/privacy-policy')} className="block hover:text-white transition-colors">Privacy Policy</button>
+                <button onClick={() => navigate('/terms')} className="block hover:text-white transition-colors">Terms of Use</button>
+                <button onClick={() => navigate('/refund-policy')} className="block hover:text-white transition-colors">Refund Policy</button>
+                <button onClick={() => navigate('/cookie-policy')} className="block hover:text-white transition-colors">Cookie Policy</button>
+                <button onClick={() => navigate('/contact')} className="block hover:text-white transition-colors">Contact Us</button>
+              </div>
+            </div>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} OMS Portal. Built for Indian businesses.</p>
-          <div className="flex gap-6 text-sm">
-            <button onClick={() => navigate('/features')} className="hover:text-white transition-colors">Features</button>
-            <button onClick={() => navigate('/pricing')} className="hover:text-white transition-colors">Pricing</button>
-            <button onClick={() => navigate('/book-demo')} className="hover:text-white transition-colors">Book Demo</button>
-            <button onClick={() => navigate('/login')} className="hover:text-white transition-colors">Login</button>
+          <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm">© {new Date().getFullYear()} OMS Portal. All rights reserved.</p>
+            <div className="flex gap-6 text-sm">
+              <button onClick={() => navigate('/privacy-policy')} className="hover:text-white transition-colors">Privacy</button>
+              <button onClick={() => navigate('/terms')} className="hover:text-white transition-colors">Terms</button>
+              <button onClick={() => navigate('/contact')} className="hover:text-white transition-colors">Contact</button>
+            </div>
           </div>
         </div>
       </footer>

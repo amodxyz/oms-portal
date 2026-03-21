@@ -12,6 +12,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import FeaturesPage from './pages/FeaturesPage';
 import PricingPage from './pages/PricingPage';
 import BookDemoPage from './pages/BookDemoPage';
+import { PrivacyPolicy, TermsOfUse, RefundPolicy, CookiePolicy, ContactUs } from './pages/LegalPages';
 import { Profile, Settings, Verifications, Integrations } from './pages/Misc';
 import SuperAdminLogin from './pages/SuperAdminLogin';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
@@ -66,6 +67,11 @@ function AppRoutes() {
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/book-demo" element={<BookDemoPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfUse />} />
+      <Route path="/refund-policy" element={<RefundPolicy />} />
+      <Route path="/cookie-policy" element={<CookiePolicy />} />
+      <Route path="/contact" element={<ContactUs />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
