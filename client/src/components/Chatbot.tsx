@@ -33,9 +33,10 @@ export default function Chatbot() {
       const { data } = await api.post('/chatbot', {
         messages: updated.filter(m => m.role !== 'assistant' || updated.indexOf(m) > 0),
       });
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I couldn\'t connect to the AI service. Please try again.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || data.message || 'No response received.' }]);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Could not connect to AI service.';
+      setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
     } finally {
       setLoading(false);
     }

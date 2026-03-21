@@ -1,25 +1,29 @@
 import { Request, Response } from 'express';
 import prisma from '../../utils/prisma';
 
-const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
-const OPENROUTER_KEY = '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';
-const MODEL = 'stepfun/step-3.5-flash:free';
+const GEMINI_KEY = 'AIzaSyCfL6BRHLsk7PscxoorxvXbSp_bICxOPsc';
+const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`;
 
-const headers = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${OPENROUTER_KEY}`,
-  'X-Title': 'OMS Portal',
-};
+// Convert OpenAI-style messages to Gemini format
+const toGemini = (messages: { role: string; content: string }[]) =>
+  messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
 
-const callAI = async (messages: { role: string; content: string }[]) => {
-  const res = await fetch(OPENROUTER_API, {
+const callAI = async (system: string, messages: { role: string; content: string }[]) => {
+  const res = await fetch(GEMINI_URL, {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ model: MODEL, messages }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: system }] },
+      contents: toGemini(messages),
+    }),
   });
-  if (!res.ok) throw new Error(await res.text());
   const data = await res.json() as any;
-  return data.choices?.[0]?.message?.content as string;
+  if (data.error) throw new Error(data.error.message);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text as string;
 };
 
 const SYSTEM_PUBLIC = `You are a helpful sales assistant for OMS Portal — a GST-ready Order Management System built for Indian businesses.
@@ -38,10 +42,10 @@ export const publicChat = async (req: Request, res: Response) => {
   if (!messages?.length) return res.status(400).json({ message: 'messages array is required' });
 
   try {
-    const reply = await callAI([{ role: 'system', content: SYSTEM_PUBLIC }, ...messages]);
+    const reply = await callAI(SYSTEM_PUBLIC, messages);
     res.json({ reply });
   } catch (e: any) {
-    res.status(502).json({ message: 'AI service error', detail: e.message });
+    res.status(502).json({ message: e.message });
   }
 };
 
@@ -58,7 +62,7 @@ export const chat = async (req: Request, res: Response) => {
     prisma.order.aggregate({ where: { tenantId, status: 'DELIVERED' }, _sum: { totalAmount: true } }),
   ]);
 
-  const systemPrompt = `You are an OMS assistant. Help users manage their business operations.
+  const system = `You are an OMS assistant. Help users manage their business operations.
 
 Current business snapshot:
 - Total Orders: ${orderCount} (${pendingOrders} pending)
@@ -70,9 +74,9 @@ Help with: orders, inventory, customers, suppliers, production, quality, logisti
 Be concise. Use Indian business context (₹, GST) where relevant.`;
 
   try {
-    const reply = await callAI([{ role: 'system', content: systemPrompt }, ...messages]);
+    const reply = await callAI(system, messages);
     res.json({ reply });
   } catch (e: any) {
-    res.status(502).json({ message: 'AI service error', detail: e.message });
+    res.status(502).json({ message: e.message });
   }
 };

@@ -37,7 +37,7 @@ export default function LandingChatbot() {
         body: JSON.stringify({ messages: updated }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'Sorry, no response received.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || data.message || 'No response received.' }]);
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I\'m having trouble connecting. Please try again.' }]);
     } finally {
