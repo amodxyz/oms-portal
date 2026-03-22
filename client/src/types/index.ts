@@ -6,15 +6,15 @@ export type DispatchStatus = 'PENDING' | 'IN_TRANSIT' | 'DELIVERED' | 'RETURNED'
 
 export interface User { id: string; name: string; email: string; role: Role; tenantId: string; emailVerified?: boolean; isActive?: boolean; createdAt?: string; }
 export interface Category { id: string; name: string; description?: string; _count?: { items: number }; }
-export interface Item { id: string; code: string; name: string; description?: string; categoryId: string; category: Category; unit: string; costPrice: number; sellingPrice: number; minStock: number; isActive: boolean; rawMaterial: boolean; createdAt: string; }
+export interface Item { id: string; code: string; name: string; description?: string; categoryId: string; category: Category; unit: string; costPrice: number; sellingPrice: number; minStock: number; isActive: boolean; rawMaterial: boolean; hsnCode?: string; gstRate?: number; createdAt: string; }
 export interface StockEntry { id: string; itemId: string; quantity: number; type: 'IN' | 'OUT' | 'ADJUSTMENT'; location?: string; reference?: string; note?: string; createdAt: string; }
 export interface StockSummary { id: string; code: string; name: string; category: string; unit: string; stock: number; minStock: number; status: 'LOW' | 'OK'; }
 export interface BOM { id: string; name: string; description?: string; items: BOMItem[]; createdAt: string; }
 export interface BOMItem { id: string; bomId: string; parentId: string; parent: Item; componentId: string; component: Item; quantity: number; unit: string; }
-export interface Customer { id: string; code: string; name: string; email?: string; phone?: string; address?: string; city?: string; country?: string; isActive: boolean; _count?: { orders: number }; createdAt: string; }
+export interface Customer { id: string; code: string; name: string; email?: string; phone?: string; address?: string; city?: string; state?: string; country?: string; gstin?: string; isActive: boolean; _count?: { orders: number }; createdAt: string; }
 export interface OrderItem { id: string; itemId: string; item: Item; quantity: number; unitPrice: number; total: number; }
 export interface Order { id: string; orderNo: string; customerId: string; customer: Customer; status: OrderStatus; orderDate: string; dueDate?: string; totalAmount: number; discount: number; tax: number; notes?: string; items: OrderItem[]; invoice?: Invoice; dispatch?: Dispatch; createdAt: string; }
-export interface Invoice { id: string; invoiceNo: string; orderId: string; order?: Order; issueDate: string; dueDate: string; amount: number; paid: number; status: string; }
+export interface Invoice { id: string; invoiceNo: string; orderId: string; order?: Order; issueDate: string; dueDate: string; taxableAmount?: number; cgst?: number; sgst?: number; igst?: number; totalGst?: number; amount: number; paid: number; status: string; gstType?: string; placeOfSupply?: string; customerGstin?: string; notes?: string; }
 export interface Supplier { id: string; code: string; name: string; email?: string; phone?: string; address?: string; city?: string; country?: string; isActive: boolean; _count?: { purchaseOrders: number }; }
 export interface PurchaseItem { id: string; itemId: string; item: Item; quantity: number; unitPrice: number; total: number; received: number; }
 export interface PurchaseOrder { id: string; poNo: string; supplierId: string; supplier: Supplier; status: PurchaseStatus; orderDate: string; expectedDate?: string; totalAmount: number; notes?: string; items: PurchaseItem[]; }

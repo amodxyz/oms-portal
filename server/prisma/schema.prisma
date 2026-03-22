@@ -25,6 +25,7 @@ model Tenant {
   email           String         @unique
   phone           String?
   address         String?
+  state           String?
   gstin           String?
   isActive        Boolean        @default(true)
   createdAt       DateTime       @default(now())
@@ -100,6 +101,8 @@ model Item {
   minStock      Int            @default(0)
   isActive      Boolean        @default(true)
   rawMaterial   Boolean        @default(false)
+  hsnCode       String?
+  gstRate       Float          @default(18)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   stockEntries  Stock[]
@@ -155,7 +158,9 @@ model Customer {
   phone     String?
   address   String?
   city      String?
+  state     String?
   country   String?
+  gstin     String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -199,16 +204,25 @@ model OrderItem {
 }
 
 model Invoice {
-  id        String   @id @default(cuid())
-  invoiceNo String   @unique
-  orderId   String   @unique
-  order     Order    @relation(fields: [orderId], references: [id])
-  issueDate DateTime @default(now())
-  dueDate   DateTime
-  amount    Float
-  paid      Float    @default(0)
-  status    String   @default("UNPAID")
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  invoiceNo      String   @unique
+  orderId        String   @unique
+  order          Order    @relation(fields: [orderId], references: [id])
+  issueDate      DateTime @default(now())
+  dueDate        DateTime
+  taxableAmount  Float    @default(0)
+  cgst           Float    @default(0)
+  sgst           Float    @default(0)
+  igst           Float    @default(0)
+  totalGst       Float    @default(0)
+  amount         Float
+  paid           Float    @default(0)
+  status         String   @default("UNPAID")
+  gstType        String   @default("CGST_SGST")
+  placeOfSupply  String?
+  customerGstin  String?
+  notes          String?
+  createdAt      DateTime @default(now())
 }
 
 model Supplier {
