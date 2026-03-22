@@ -17,6 +17,9 @@ export const createTransporter = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateTransporter = async (req: AuthRequest, res: Response) => {
-  const transporter = await prisma.transporter.update({ where: { id: req.params.id }, data: req.body });
+  const existing = await prisma.transporter.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Transporter not found' });
+  const { name, phone, email, vehicle, isActive } = req.body;
+  const transporter = await prisma.transporter.update({ where: { id: req.params.id }, data: { name, phone, email, vehicle, isActive } });
   res.json(transporter);
 };

@@ -62,11 +62,15 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
 export const updateOrder = async (req: AuthRequest, res: Response) => {
   const { status, notes, dueDate } = req.body;
+  const existing = await prisma.order.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Order not found' });
   const order = await prisma.order.update({ where: { id: req.params.id }, data: { status, notes, dueDate }, include: { customer: true } });
   res.json(order);
 };
 
 export const deleteOrder = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.order.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Order not found' });
   await prisma.orderItem.deleteMany({ where: { orderId: req.params.id } });
   await prisma.order.delete({ where: { id: req.params.id } });
   res.json({ message: 'Order deleted' });

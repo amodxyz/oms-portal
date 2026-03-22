@@ -249,6 +249,8 @@ export const createInvoice = async (req: AuthRequest, res: Response) => {
 
 export const updateInvoice = async (req: AuthRequest, res: Response) => {
   const { paid, status } = req.body;
+  const existing = await prisma.invoice.findFirst({ where: { id: req.params.id, order: { tenantId: req.user!.tenantId } } });
+  if (!existing) return res.status(404).json({ message: 'Invoice not found' });
   const invoice = await prisma.invoice.update({ where: { id: req.params.id }, data: { paid, status } });
   res.json(invoice);
 };

@@ -26,11 +26,16 @@ export const createCustomer = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateCustomer = async (req: AuthRequest, res: Response) => {
-  const customer = await prisma.customer.update({ where: { id: req.params.id }, data: req.body });
+  const existing = await prisma.customer.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Customer not found' });
+  const { name, email, phone, address, city, state, country, gstin } = req.body;
+  const customer = await prisma.customer.update({ where: { id: req.params.id }, data: { name, email, phone, address, city, state, country, gstin } });
   res.json(customer);
 };
 
 export const deleteCustomer = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.customer.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Customer not found' });
   await prisma.customer.update({ where: { id: req.params.id }, data: { isActive: false } });
   res.json({ message: 'Customer deactivated' });
 };

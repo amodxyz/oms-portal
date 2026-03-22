@@ -32,11 +32,16 @@ export const createItem = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateItem = async (req: AuthRequest, res: Response) => {
-  const item = await prisma.item.update({ where: { id: req.params.id }, data: req.body, include: { category: true } });
+  const existing = await prisma.item.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Item not found' });
+  const { name, description, categoryId, unit, costPrice, sellingPrice, minStock, isActive, rawMaterial, hsnCode, gstRate } = req.body;
+  const item = await prisma.item.update({ where: { id: req.params.id }, data: { name, description, categoryId, unit, costPrice, sellingPrice, minStock, isActive, rawMaterial, hsnCode, gstRate }, include: { category: true } });
   res.json(item);
 };
 
 export const deleteItem = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.item.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Item not found' });
   await prisma.item.update({ where: { id: req.params.id }, data: { isActive: false } });
   res.json({ message: 'Item deactivated' });
 };

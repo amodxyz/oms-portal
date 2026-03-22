@@ -26,11 +26,16 @@ export const createSupplier = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateSupplier = async (req: AuthRequest, res: Response) => {
-  const supplier = await prisma.supplier.update({ where: { id: req.params.id }, data: req.body });
+  const existing = await prisma.supplier.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Supplier not found' });
+  const { name, email, phone, address, city, country } = req.body;
+  const supplier = await prisma.supplier.update({ where: { id: req.params.id }, data: { name, email, phone, address, city, country } });
   res.json(supplier);
 };
 
 export const deleteSupplier = async (req: AuthRequest, res: Response) => {
+  const existing = await prisma.supplier.findFirst({ where: { id: req.params.id, tenantId: req.user!.tenantId } });
+  if (!existing) return res.status(404).json({ message: 'Supplier not found' });
   await prisma.supplier.update({ where: { id: req.params.id }, data: { isActive: false } });
   res.json({ message: 'Supplier deactivated' });
 };

@@ -1,0 +1,26 @@
+User-agent: *
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /items
+Disallow: /sales/
+Disallow: /purchasing/
+Disallow: /production/
+Disallow: /quality/
+Disallow: /logistics/
+Disallow: /reports/
+Disallow: /billing/
+Disallow: /profile
+Disallow: /settings
+Disallow: /verifications
+Disallow: /integrations
+Disallow: /superadmin/
+
+Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /book-demo
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms
+Allow: /refund-policy
+Allow: /cookie-policy
