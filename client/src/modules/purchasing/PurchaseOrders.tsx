@@ -75,6 +75,7 @@ export function NewPurchaseOrder() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ supplierId: '', expectedDate: '', notes: '', gstType: 'CGST_SGST' });
   const [lineItems, setLineItems] = useState([{ itemId: '', quantity: 1, unitPrice: 0 }]);
 
@@ -88,8 +89,7 @@ export function NewPurchaseOrder() {
   const updateLine = (i: number, k: string, v: unknown) => setLineItems(l => l.map((item, idx) => idx === i ? { ...item, [k]: v } : item));
   const onItemSelect = (i: number, itemId: string) => {
     const item = items.find(it => it.id === itemId);
-    updateLine(i, 'itemId', itemId);
-    if (item) updateLine(i, 'unitPrice', item.costPrice);
+    setLineItems(l => l.map((line, idx) => idx === i ? { ...line, itemId, unitPrice: item ? item.costPrice : line.unitPrice } : line));
   };
 
   const subtotal = lineItems.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
@@ -100,11 +100,15 @@ export function NewPurchaseOrder() {
   const total = subtotal + gstAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault(); setLoading(true); setError('');
     try {
-      await api.post('/purchasing/orders', { supplierId: form.supplierId, expectedDate: form.expectedDate, notes: form.notes, items: lineItems });
+      const validLines = lineItems.filter(l => l.itemId && l.quantity > 0);
+      if (!validLines.length) { setError('Add at least one item'); setLoading(false); return; }
+      await api.post('/purchasing/orders', { supplierId: form.supplierId, expectedDate: form.expectedDate, notes: form.notes, items: validLines });
       navigate('/purchasing/orders');
-    } catch { alert('Error creating purchase order'); } finally { setLoading(false); }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Error creating purchase order. Please try again.');
+    } finally { setLoading(false); }
   };
 
   return (
@@ -169,6 +173,7 @@ export function NewPurchaseOrder() {
               </div>
             </div>
             <button type="submit" className="btn-primary w-full justify-center py-3" disabled={loading}>{loading ? 'Creating...' : 'Create PO'}</button>
+            {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
             <button type="button" className="btn-secondary w-full justify-center" onClick={() => navigate('/purchasing/orders')}>Cancel</button>
           </div>
         </div>

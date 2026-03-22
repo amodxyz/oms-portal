@@ -21,9 +21,27 @@ export const getPurchaseOrder = async (req: AuthRequest, res: Response) => {
 
 export const createPurchaseOrder = async (req: AuthRequest, res: Response) => {
   const { supplierId, expectedDate, notes, items } = req.body;
+
+  // Verify supplier belongs to this tenant
+  const supplier = await prisma.supplier.findFirst({ where: { id: supplierId, tenantId: req.user!.tenantId } });
+  if (!supplier) return res.status(400).json({ message: 'Supplier not found' });
+
+  // Verify all items belong to this tenant
+  const itemIds = items.map((i: { itemId: string }) => i.itemId);
+  const validItems = await prisma.item.findMany({ where: { id: { in: itemIds }, tenantId: req.user!.tenantId } });
+  if (validItems.length !== itemIds.length) return res.status(400).json({ message: 'One or more items not found' });
+
   const totalAmount = items.reduce((s: number, i: { quantity: number; unitPrice: number }) => s + i.quantity * i.unitPrice, 0);
   const order = await prisma.purchaseOrder.create({
-    data: { tenantId: req.user!.tenantId, poNo: generatePONo(req.user!.tenantId), supplierId, expectedDate, notes, totalAmount, items: { create: items.map((i: { itemId: string; quantity: number; unitPrice: number }) => ({ ...i, total: i.quantity * i.unitPrice })) } },
+    data: {
+      tenantId: req.user!.tenantId,
+      poNo: generatePONo(req.user!.tenantId),
+      supplierId,
+      expectedDate: expectedDate ? new Date(expectedDate) : undefined,
+      notes,
+      totalAmount,
+      items: { create: items.map((i: { itemId: string; quantity: number; unitPrice: number }) => ({ itemId: i.itemId, quantity: i.quantity, unitPrice: i.unitPrice, total: i.quantity * i.unitPrice })) },
+    },
     include: { supplier: true, items: { include: { item: true } } },
   });
   res.status(201).json(order);
