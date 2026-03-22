@@ -112,13 +112,13 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-40">
-      <div className="p-6 border-b border-white/10">
+    <aside className="w-64 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-40">
+      <div className="p-6 border-b border-white/10 flex-shrink-0">
         <h1 className="text-white font-bold text-xl">⚡ OMS Portal</h1>
         <p className="text-gray-400 text-xs mt-1">Order Management System</p>
       </div>
 
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto min-h-0">
         {navItems.map(item =>
           item.children ? <NavGroup key={item.label} item={item} /> :
           <NavLink key={item.path} to={item.path!} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
@@ -127,7 +127,7 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-white/10 flex-shrink-0">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
             {user?.name?.charAt(0).toUpperCase()}
@@ -138,8 +138,8 @@ export default function Sidebar() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => navigate('/profile')} className="flex-1 text-xs text-gray-400 hover:text-white py-1.5 rounded-lg hover:bg-white/10 transition-colors">Profile</button>
-          <button onClick={handleLogout} className="flex-1 text-xs text-gray-400 hover:text-red-400 py-1.5 rounded-lg hover:bg-white/10 transition-colors">Logout</button>
+          <button onClick={() => navigate('/profile')} className="flex-1 text-xs text-gray-400 hover:text-white py-1.5 rounded-lg hover:bg-white/10 transition-colors">👤 Profile</button>
+          <button onClick={handleLogout} className="flex-1 text-xs text-red-400 hover:text-red-300 py-1.5 rounded-lg hover:bg-white/10 transition-colors">🚪 Logout</button>
         </div>
       </div>
     </aside>
