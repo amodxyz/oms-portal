@@ -20,12 +20,26 @@ export const getInspection = async (req: AuthRequest, res: Response) => {
 };
 
 export const createInspection = async (req: AuthRequest, res: Response) => {
-  const { type, referenceId, inspector, date, notes, items } = req.body;
-  const inspection = await prisma.inspection.create({
-    data: { tenantId: req.user!.tenantId, refNo: generateRefNo(req.user!.tenantId), type, referenceId, inspector, date, notes, items: { create: items || [] } },
-    include: { items: true },
-  });
-  res.status(201).json(inspection);
+  try {
+    const { type, referenceId, inspector, date, notes, items } = req.body;
+    const inspection = await prisma.inspection.create({
+      data: {
+        tenantId: req.user!.tenantId,
+        refNo: generateRefNo(req.user!.tenantId),
+        type,
+        referenceId: referenceId || null,
+        inspector,
+        date: new Date(date),
+        notes: notes || null,
+        items: { create: (items || []).map((i: { parameter: string; expected: string; actual?: string; remarks?: string }) => ({ parameter: i.parameter, expected: i.expected, actual: i.actual || null, remarks: i.remarks || null })) },
+      },
+      include: { items: true },
+    });
+    res.status(201).json(inspection);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Error creating inspection';
+    res.status(400).json({ message: msg });
+  }
 };
 
 export const updateInspection = async (req: AuthRequest, res: Response) => {

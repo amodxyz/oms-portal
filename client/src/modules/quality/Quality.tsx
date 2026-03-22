@@ -9,6 +9,7 @@ export function InspectionsList() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ type: 'INCOMING', inspector: '', date: new Date().toISOString().split('T')[0], notes: '', items: [{ parameter: '', expected: '', actual: '', remarks: '' }] });
 
   const fetch = useCallback(async () => {
@@ -24,9 +25,14 @@ export function InspectionsList() {
   const updateItem = (i: number, k: string, v: string) => setForm(f => ({ ...f, items: f.items.map((item, idx) => idx === i ? { ...item, [k]: v } : item) }));
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await api.post('/quality/inspections', form);
-    setShowModal(false); fetch();
+    e.preventDefault(); setError('');
+    try {
+      await api.post('/quality/inspections', form);
+      setShowModal(false); fetch();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Error creating inspection';
+      setError(msg);
+    }
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
@@ -103,6 +109,7 @@ export function InspectionsList() {
               </div>
             </div>
             <div className="modal-footer">
+              {error && <p className="text-red-500 text-sm mr-auto">{error}</p>}
               <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
               <button type="submit" className="btn-primary">Create Inspection</button>
             </div>
