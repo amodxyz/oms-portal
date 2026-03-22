@@ -46,12 +46,6 @@ npm run dev
 Frontend: http://localhost:3000
 Backend: http://localhost:5000
 
-## Default Credentials
-
-- Admin: admin@oms.com / admin123
-- Manager: manager@oms.com / manager123
-- Staff: staff@oms.com / staff123
-
 ## Project Structure
 
 ```
