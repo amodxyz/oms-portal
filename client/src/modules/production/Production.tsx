@@ -71,6 +71,7 @@ export function ProductionList() {
 export function NewProductionOrder() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ productName: '', quantity: 1, unit: 'pcs', startDate: '', endDate: '', priority: 'NORMAL', assignedTo: '', notes: '' });
   const [resources, setResources] = useState([{ resourceName: '', resourceType: 'MACHINE', quantity: 1, unit: 'hrs' }]);
 
@@ -80,11 +81,14 @@ export function NewProductionOrder() {
   const updateResource = (i: number, k: string, v: unknown) => setResources(r => r.map((res, idx) => idx === i ? { ...res, [k]: v } : res));
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault(); setLoading(true); setError('');
     try {
       await api.post('/production', { ...form, resources: resources.filter(r => r.resourceName) });
       navigate('/production');
-    } catch { alert('Error creating production order'); } finally { setLoading(false); }
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Error creating production order';
+      setError(msg);
+    } finally { setLoading(false); }
   };
 
   return (
@@ -139,6 +143,7 @@ export function NewProductionOrder() {
           <div className="space-y-4">
             <button type="submit" className="btn-primary w-full justify-center py-3" disabled={loading}>{loading ? 'Creating...' : 'Create Order'}</button>
             <button type="button" className="btn-secondary w-full justify-center" onClick={() => navigate('/production')}>Cancel</button>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
         </div>
       </form>

@@ -19,12 +19,29 @@ export const getProductionOrder = async (req: AuthRequest, res: Response) => {
 };
 
 export const createProductionOrder = async (req: AuthRequest, res: Response) => {
-  const { productName, quantity, unit, startDate, endDate, priority, assignedTo, notes, resources } = req.body;
-  const order = await prisma.productionOrder.create({
-    data: { tenantId: req.user!.tenantId, orderNo: generateOrderNo(req.user!.tenantId), productName, quantity, unit, startDate, endDate, priority, assignedTo, notes, resources: { create: resources || [] } },
-    include: { resources: true },
-  });
-  res.status(201).json(order);
+  try {
+    const { productName, quantity, unit, startDate, endDate, priority, assignedTo, notes, resources } = req.body;
+    const order = await prisma.productionOrder.create({
+      data: {
+        tenantId: req.user!.tenantId,
+        orderNo: generateOrderNo(req.user!.tenantId),
+        productName,
+        quantity: parseFloat(quantity),
+        unit,
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : null,
+        priority,
+        assignedTo: assignedTo || null,
+        notes: notes || null,
+        resources: { create: (resources || []).map((r: { resourceName: string; resourceType: string; quantity: number; unit: string }) => ({ resourceName: r.resourceName, resourceType: r.resourceType, quantity: parseFloat(String(r.quantity)), unit: r.unit })) },
+      },
+      include: { resources: true },
+    });
+    res.status(201).json(order);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Error creating production order';
+    res.status(400).json({ message: msg });
+  }
 };
 
 export const updateProductionOrder = async (req: AuthRequest, res: Response) => {
