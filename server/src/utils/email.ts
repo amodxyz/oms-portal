@@ -49,3 +49,15 @@ export const sendPasswordResetEmail = (to: string, token: string) =>
       <p style="color:#888;font-size:12px;margin-top:24px">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
     </div>
   `);
+
+export const sendInvoiceEmail = (to: string, invoiceNo: string, customerName: string, amount: number, invoiceHtml: string) =>
+  send(to, `Invoice ${invoiceNo} from OMS Portal`, `
+    <div style="font-family:sans-serif;max-width:600px;margin:auto">
+      <h2>Invoice ${invoiceNo}</h2>
+      <p>Dear ${customerName},</p>
+      <p>Please find your invoice details below. Total amount due: <strong>₹${amount.toFixed(2)}</strong></p>
+      <hr style="margin:24px 0">
+      ${invoiceHtml}
+      <p style="color:#888;font-size:12px;margin-top:24px">Thank you for your business!</p>
+    </div>
+  `);

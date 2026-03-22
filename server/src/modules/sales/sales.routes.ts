@@ -24,6 +24,8 @@ router.delete('/customers/:id', customers.deleteCustomer);
 router.get('/invoices', invoices.getInvoices);
 router.post('/invoices', invoices.createInvoice);
 router.get('/invoices/:id', invoices.getInvoice);
+router.get('/invoices/:id/download', invoices.downloadInvoice);
+router.post('/invoices/:id/send', invoices.sendInvoice);
 router.put('/invoices/:id', invoices.updateInvoice);
 
 export default router;
