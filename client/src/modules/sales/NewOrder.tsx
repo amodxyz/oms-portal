@@ -12,6 +12,7 @@ export default function NewOrder() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ customerId: '', dueDate: '', discount: 0, notes: '', gstType: 'CGST_SGST' });
   const [lineItems, setLineItems] = useState<LineItem[]>([{ itemId: '', quantity: 1, unitPrice: 0 }]);
 
@@ -25,8 +26,7 @@ export default function NewOrder() {
   const updateLine = (i: number, k: string, v: unknown) => setLineItems(l => l.map((item, idx) => idx === i ? { ...item, [k]: v } : item));
   const onItemSelect = (i: number, itemId: string) => {
     const item = items.find(it => it.id === itemId);
-    updateLine(i, 'itemId', itemId);
-    if (item) updateLine(i, 'unitPrice', item.sellingPrice);
+    setLineItems(l => l.map((line, idx) => idx === i ? { ...line, itemId, unitPrice: item ? item.sellingPrice : line.unitPrice } : line));
   };
 
   const subtotal = lineItems.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
@@ -38,11 +38,15 @@ export default function NewOrder() {
   const total = discounted + gstAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault(); setLoading(true); setError('');
     try {
-      await api.post('/sales/orders', { ...form, tax: gstAmount, items: lineItems });
+      const validLines = lineItems.filter(l => l.itemId && l.quantity > 0);
+      if (!validLines.length) { setError('Add at least one item'); setLoading(false); return; }
+      await api.post('/sales/orders', { ...form, tax: gstAmount, items: validLines });
       navigate('/sales/orders');
-    } catch { alert('Error creating order'); } finally { setLoading(false); }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Error creating order. Please try again.');
+    } finally { setLoading(false); }
   };
 
   return (
@@ -121,6 +125,7 @@ export default function NewOrder() {
               </div>
             </div>
             <button type="submit" className="btn-primary w-full justify-center py-3" disabled={loading}>{loading ? 'Creating...' : 'Create Order'}</button>
+            {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
             <button type="button" className="btn-secondary w-full justify-center" onClick={() => navigate('/sales/orders')}>Cancel</button>
           </div>
         </div>

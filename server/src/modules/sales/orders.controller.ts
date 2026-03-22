@@ -10,7 +10,10 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
   const where: Record<string, unknown> = { tenantId: req.user!.tenantId };
   if (status) where.status = status;
   if (customerId) where.customerId = customerId;
-  if (search) where.OR = [{ orderNo: { contains: search } }, { customer: { name: { contains: search } } }];
+  if (search) where.OR = [
+    { orderNo: { contains: search, mode: 'insensitive' } },
+    { customer: { name: { contains: search, mode: 'insensitive' } } },
+  ];
 
   const [orders, total] = await Promise.all([
     prisma.order.findMany({ where, include: { customer: true, items: { include: { item: true } } }, skip, take: parseInt(limit), orderBy: { createdAt: 'desc' } }),
@@ -27,11 +30,31 @@ export const getOrder = async (req: AuthRequest, res: Response) => {
 
 export const createOrder = async (req: AuthRequest, res: Response) => {
   const { customerId, dueDate, discount, tax, notes, items } = req.body;
+
+  // Verify customer belongs to this tenant
+  const customer = await prisma.customer.findFirst({ where: { id: customerId, tenantId: req.user!.tenantId } });
+  if (!customer) return res.status(400).json({ message: 'Customer not found' });
+
+  // Verify all items belong to this tenant
+  const itemIds = items.map((i: { itemId: string }) => i.itemId);
+  const validItems = await prisma.item.findMany({ where: { id: { in: itemIds }, tenantId: req.user!.tenantId } });
+  if (validItems.length !== itemIds.length) return res.status(400).json({ message: 'One or more items not found' });
+
   const subtotal = items.reduce((s: number, i: { quantity: number; unitPrice: number }) => s + i.quantity * i.unitPrice, 0);
   const totalAmount = subtotal - (discount || 0) + (tax || 0);
 
   const order = await prisma.order.create({
-    data: { tenantId: req.user!.tenantId, orderNo: generateOrderNo(req.user!.tenantId), customerId, dueDate, discount, tax, notes, totalAmount, items: { create: items.map((i: { itemId: string; quantity: number; unitPrice: number }) => ({ ...i, total: i.quantity * i.unitPrice })) } },
+    data: {
+      tenantId: req.user!.tenantId,
+      orderNo: generateOrderNo(req.user!.tenantId),
+      customerId,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      discount: discount || 0,
+      tax: tax || 0,
+      notes,
+      totalAmount,
+      items: { create: items.map((i: { itemId: string; quantity: number; unitPrice: number }) => ({ itemId: i.itemId, quantity: i.quantity, unitPrice: i.unitPrice, total: i.quantity * i.unitPrice })) },
+    },
     include: { customer: true, items: { include: { item: true } } },
   });
   res.status(201).json(order);
