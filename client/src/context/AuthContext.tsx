@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { User } from '../types';
 import api from '../utils/api';
 
-interface Tenant { id: string; name: string; slug: string; }
+interface Tenant { id: string; name: string; slug: string; email?: string; phone?: string; address?: string; state?: string; gstin?: string; }
 
 interface AuthContextType {
   user: User | null;
@@ -12,6 +12,7 @@ interface AuthContextType {
   register: (orgName: string, email: string, password: string, phone?: string, gstin?: string) => Promise<{ message: string }>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
+  refreshUser: () => Promise<void>;
   loading: boolean;
 }
 
@@ -38,6 +39,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setTenant(null);
   };
+
+  const refreshUser = useCallback(async () => {
+    const { data } = await api.get('/auth/profile');
+    setUser(data);
+    setTenant(data.tenant ?? null);
+  }, []);
 
   const refreshToken = useCallback(async (): Promise<string | null> => {
     try {
@@ -103,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, tenant, token, login, register, logout, refreshToken, loading }}>
+    <AuthContext.Provider value={{ user, tenant, token, login, register, logout, refreshToken, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

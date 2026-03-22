@@ -193,7 +193,7 @@ export const resetPassword = async (req: Request, res: Response) => {
 export const getProfile = async (req: AuthRequest, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user!.id },
-    select: { id: true, name: true, email: true, role: true, emailVerified: true, createdAt: true, tenant: { select: { id: true, name: true, slug: true, email: true, phone: true, gstin: true } } },
+    select: { id: true, name: true, email: true, role: true, emailVerified: true, createdAt: true, tenant: { select: { id: true, name: true, slug: true, email: true, phone: true, address: true, state: true, gstin: true } } },
   });
   res.json(user);
 };
@@ -254,7 +254,7 @@ export const getTenant = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateTenant = async (req: AuthRequest, res: Response) => {
-  const { name, phone, address, gstin } = req.body;
-  const tenant = await prisma.tenant.update({ where: { id: req.user!.tenantId }, data: { name, phone, address, gstin } });
+  const { name, phone, address, state, gstin } = req.body;
+  const tenant = await prisma.tenant.update({ where: { id: req.user!.tenantId }, data: { name, phone, address, state, gstin } });
   res.json(tenant);
 };
