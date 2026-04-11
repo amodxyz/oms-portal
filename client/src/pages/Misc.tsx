@@ -89,12 +89,7 @@ export function Profile() {
   };
 
   // ── Security tab ──
-  const [sessions, setSessions] = useState<number | null>(null);
   const { logout } = useAuth();
-
-  useEffect(() => {
-    if (tab === 'security') api.get('/auth/profile').then(() => setSessions(null));
-  }, [tab]);
 
   const logoutAll = async () => {
     await api.post('/auth/logout-all');

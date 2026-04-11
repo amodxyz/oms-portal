@@ -92,21 +92,20 @@ export default function LandingPage() {
           </div>
           <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Total Orders', value: '1,284', color: 'bg-blue-50 text-blue-700', icon: '🛒' },
-              { label: 'Revenue', value: '₹24.6L', color: 'bg-green-50 text-green-700', icon: '💰' },
-              { label: 'GST Payable', value: '₹3.2L', color: 'bg-orange-50 text-orange-700', icon: '📋' },
-              { label: 'Stock Items', value: '342', color: 'bg-purple-50 text-purple-700', icon: '📦' },
+              { label: 'Sales Orders', color: 'bg-blue-50 text-blue-700', icon: '🛒' },
+              { label: 'Revenue Tracked', color: 'bg-green-50 text-green-700', icon: '💰' },
+              { label: 'GST Compliant', color: 'bg-orange-50 text-orange-700', icon: '📋' },
+              { label: 'Stock Items', color: 'bg-purple-50 text-purple-700', icon: '📦' },
             ].map(s => (
               <div key={s.label} className={`${s.color} rounded-xl p-4`}>
-                <div className="text-2xl mb-1">{s.icon}</div>
-                <div className="text-xl font-bold">{s.value}</div>
-                <div className="text-xs opacity-70 mt-1">{s.label}</div>
+                <div className="text-2xl mb-2">{s.icon}</div>
+                <div className="text-xs font-semibold opacity-80">{s.label}</div>
               </div>
             ))}
           </div>
           <div className="px-6 pb-6 grid grid-cols-3 gap-3">
-            {['Pending Orders: 23', 'Low Stock Alerts: 5', 'Invoices Due: 8'].map(t => (
-              <div key={t} className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-500 text-center">{t}</div>
+            {['Real-time Inventory', 'GST Invoice PDF', 'WhatsApp & Email'].map(t => (
+              <div key={t} className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-500 text-center font-medium">{t}</div>
             ))}
           </div>
         </div>

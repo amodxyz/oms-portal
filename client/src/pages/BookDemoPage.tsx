@@ -158,7 +158,7 @@ export default function BookDemoPage() {
                           value={form.name}
                           onChange={e => set('name', e.target.value)}
                           className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Rahul Sharma"
+                          placeholder="Your full name"
                         />
                       </div>
                       <div>
@@ -180,7 +180,7 @@ export default function BookDemoPage() {
                         value={form.email}
                         onChange={e => set('email', e.target.value)}
                         className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="rahul@company.com"
+                        placeholder="you@company.com"
                       />
                     </div>
                     <div>
@@ -190,7 +190,7 @@ export default function BookDemoPage() {
                         value={form.company}
                         onChange={e => set('company', e.target.value)}
                         className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Acme Pvt Ltd"
+                        placeholder="Your company name"
                       />
                     </div>
                     <div>
