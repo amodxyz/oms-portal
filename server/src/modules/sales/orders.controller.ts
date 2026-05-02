@@ -11,8 +11,8 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
   if (status) where.status = status;
   if (customerId) where.customerId = customerId;
   if (search) where.OR = [
-    { orderNo: { contains: search, mode: 'insensitive' } },
-    { customer: { name: { contains: search, mode: 'insensitive' } } },
+    { orderNo: { contains: search } },
+    { customer: { name: { contains: search } } },
   ];
 
   const [orders, total] = await Promise.all([

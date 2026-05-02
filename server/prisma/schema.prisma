@@ -4,13 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model SuperAdmin {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   name      String
@@ -19,7 +18,7 @@ model SuperAdmin {
 }
 
 model Tenant {
-  id              String         @id @default(cuid())
+  id              String         @id @default(uuid())
   name            String
   slug            String         @unique
   email           String         @unique
@@ -45,7 +44,7 @@ model Tenant {
 }
 
 model User {
-  id                String         @id @default(cuid())
+  id                String         @id @default(uuid())
   tenantId          String
   tenant            Tenant         @relation(fields: [tenantId], references: [id])
   name              String
@@ -66,7 +65,7 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   token     String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -75,7 +74,7 @@ model RefreshToken {
 }
 
 model Category {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   name        String
@@ -87,7 +86,7 @@ model Category {
 }
 
 model Item {
-  id            String         @id @default(cuid())
+  id            String         @id @default(uuid())
   tenantId      String
   tenant        Tenant         @relation(fields: [tenantId], references: [id])
   code          String
@@ -115,7 +114,7 @@ model Item {
 }
 
 model Stock {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   itemId    String
   item      Item     @relation(fields: [itemId], references: [id])
   quantity  Float
@@ -127,7 +126,7 @@ model Stock {
 }
 
 model BOM {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   tenantId    String
   name        String
   description String?
@@ -137,7 +136,7 @@ model BOM {
 }
 
 model BOMItem {
-  id          String @id @default(cuid())
+  id          String @id @default(uuid())
   bomId       String
   bom         BOM    @relation(fields: [bomId], references: [id])
   parentId    String
@@ -149,7 +148,7 @@ model BOMItem {
 }
 
 model Customer {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   code      String
@@ -170,7 +169,7 @@ model Customer {
 }
 
 model Order {
-  id          String      @id @default(cuid())
+  id          String      @id @default(uuid())
   tenantId    String
   tenant      Tenant      @relation(fields: [tenantId], references: [id])
   orderNo     String
@@ -193,7 +192,7 @@ model Order {
 }
 
 model OrderItem {
-  id        String @id @default(cuid())
+  id        String @id @default(uuid())
   orderId   String
   order     Order  @relation(fields: [orderId], references: [id])
   itemId    String
@@ -204,7 +203,7 @@ model OrderItem {
 }
 
 model Invoice {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid())
   invoiceNo      String   @unique
   orderId        String   @unique
   order          Order    @relation(fields: [orderId], references: [id])
@@ -226,7 +225,7 @@ model Invoice {
 }
 
 model Supplier {
-  id             String          @id @default(cuid())
+  id             String          @id @default(uuid())
   tenantId       String
   tenant         Tenant          @relation(fields: [tenantId], references: [id])
   code           String
@@ -245,7 +244,7 @@ model Supplier {
 }
 
 model PurchaseOrder {
-  id           String         @id @default(cuid())
+  id           String         @id @default(uuid())
   tenantId     String
   tenant       Tenant         @relation(fields: [tenantId], references: [id])
   poNo         String
@@ -264,7 +263,7 @@ model PurchaseOrder {
 }
 
 model PurchaseItem {
-  id              String        @id @default(cuid())
+  id              String        @id @default(uuid())
   purchaseOrderId String
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
   itemId          String
@@ -276,7 +275,7 @@ model PurchaseItem {
 }
 
 model ProductionOrder {
-  id          String               @id @default(cuid())
+  id          String               @id @default(uuid())
   tenantId    String
   tenant      Tenant               @relation(fields: [tenantId], references: [id])
   orderNo     String
@@ -297,7 +296,7 @@ model ProductionOrder {
 }
 
 model ProductionResource {
-  id                String          @id @default(cuid())
+  id                String          @id @default(uuid())
   productionOrderId String
   productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
   resourceName      String
@@ -307,7 +306,7 @@ model ProductionResource {
 }
 
 model Inspection {
-  id          String           @id @default(cuid())
+  id          String           @id @default(uuid())
   tenantId    String
   tenant      Tenant           @relation(fields: [tenantId], references: [id])
   refNo       String
@@ -324,7 +323,7 @@ model Inspection {
 }
 
 model InspectionItem {
-  id           String     @id @default(cuid())
+  id           String     @id @default(uuid())
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id])
   parameter    String
@@ -335,7 +334,7 @@ model InspectionItem {
 }
 
 model Transporter {
-  id         String     @id @default(cuid())
+  id         String     @id @default(uuid())
   tenantId   String
   tenant     Tenant     @relation(fields: [tenantId], references: [id])
   code       String
@@ -351,12 +350,12 @@ model Transporter {
 }
 
 model Plan {
-  id            String         @id @default(cuid())
+  id            String         @id @default(uuid())
   name          String
   description   String?
   price         Float
   billingCycle  String         @default("MONTHLY")
-  features      String
+  features      String   @db.Text
   maxUsers      Int            @default(5)
   maxOrders     Int            @default(1000)
   isActive      Boolean        @default(true)
@@ -368,7 +367,7 @@ model Plan {
 }
 
 model Coupon {
-  id              String    @id @default(cuid())
+  id              String    @id @default(uuid())
   code            String    @unique
   description     String?
   discountType    String    @default("PERCENT") // PERCENT | FIXED
@@ -384,18 +383,18 @@ model Coupon {
 }
 
 model PaymentGateway {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String   @unique // razorpay | stripe | paypal
   displayName String
   isActive    Boolean  @default(false)
   isTestMode  Boolean  @default(true)
-  config      String   // JSON: keys, secrets (encrypted)
+  config      String   @db.Text // JSON: keys, secrets (encrypted)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model SystemSetting {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   key       String   @unique
   value     String
   group     String   @default("general")
@@ -403,7 +402,7 @@ model SystemSetting {
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   actor      String   // superadmin email
   action     String
   entity     String
@@ -414,7 +413,7 @@ model AuditLog {
 }
 
 model Subscription {
-  id             String          @id @default(cuid())
+  id             String          @id @default(uuid())
   tenantId       String
   tenant         Tenant          @relation(fields: [tenantId], references: [id])
   planId         String
@@ -429,7 +428,7 @@ model Subscription {
 }
 
 model BillingRecord {
-  id             String       @id @default(cuid())
+  id             String       @id @default(uuid())
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   invoiceNo      String       @unique
@@ -445,7 +444,7 @@ model BillingRecord {
 }
 
 model Dispatch {
-  id            String      @id @default(cuid())
+  id            String      @id @default(uuid())
   tenantId      String
   tenant        Tenant      @relation(fields: [tenantId], references: [id])
   dispatchNo    String
