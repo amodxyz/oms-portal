@@ -31,7 +31,7 @@ export default function Chatbot() {
 
     try {
       const { data } = await api.post('/chatbot', {
-        messages: updated.filter(m => m.role !== 'assistant' || updated.indexOf(m) > 0),
+        messages: updated.filter((m, i) => !(m.role === 'assistant' && i === 0)),
       });
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply || data.message || 'No response received.' }]);
     } catch (err: any) {
@@ -47,7 +47,7 @@ export default function Chatbot() {
       {/* Floating button */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all"
+        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110"
         title="OMS Assistant"
       >
         {open ? (
@@ -63,7 +63,7 @@ export default function Chatbot() {
 
       {/* Chat window */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden" style={{ height: 'min(480px, calc(100vh - 120px))' }}>
+        <div className="fixed bottom-24 right-6 z-[9999] w-80 sm:w-96 bg-white rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden" style={{ height: 'min(480px, calc(100vh - 120px))' }}>
           {/* Header */}
           <div className="bg-blue-600 px-4 py-3 flex items-center gap-3">
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
