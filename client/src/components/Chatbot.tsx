@@ -35,7 +35,7 @@ export default function Chatbot() {
       });
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply || data.message || 'No response received.' }]);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Could not connect to AI service.';
+      const msg = err.response?.data?.message || 'Sorry, I\'m having trouble connecting. Please try again.';
       setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
     } finally {
       setLoading(false);

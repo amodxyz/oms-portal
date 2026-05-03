@@ -44,6 +44,7 @@ export const chat = async (req: Request, res: Response) => {
   const tenantId = (req as any).user.tenantId;
   if (!messages?.length) return res.status(400).json({ message: 'messages array is required' });
 
+  if (!GROQ_KEY) return res.status(503).json({ message: 'AI service is not configured. Please contact support.' });
   const [orderCount, pendingOrders, itemCount, customerCount, revenue] = await Promise.all([
     prisma.order.count({ where: { tenantId } }),
     prisma.order.count({ where: { tenantId, status: 'PENDING' } }),
