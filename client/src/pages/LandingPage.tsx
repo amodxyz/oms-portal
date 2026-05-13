@@ -65,11 +65,11 @@ export default function LandingPage() {
             GST-Ready Order Management
           </span>
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-            Run Your Business<br />
-            <span className="text-blue-600">Smarter & Faster</span>
+            India's #1 Order Management System<br />
+            <span className="text-blue-600">for GST-Compliant SMEs</span>
           </h1>
           <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            A complete Order Management System with GST compliance, inventory tracking, production scheduling, and real-time analytics — built for Indian businesses.
+            Automate GST invoicing, track inventory in real-time, and manage orders end-to-end — the complete OMS built for Indian small and medium businesses.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button onClick={() => navigate('/register')} className="bg-blue-600 text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300">
@@ -127,8 +127,8 @@ export default function LandingPage() {
       <section id="features" className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Everything You Need</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">One platform to manage your entire business operations — from procurement to delivery.</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">All-in-One OMS Features for Indian SMEs</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">One GST-ready platform to manage your entire business — orders, inventory, purchasing, production, logistics, and billing.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(f => (
@@ -147,7 +147,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
           <div className="flex-1">
             <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">GST Compliant</span>
-            <h2 className="text-2xl font-bold text-gray-900 mt-2 mb-4">Built for Indian Tax Laws</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mt-2 mb-4">GST Billing Software Built for Indian Tax Laws</h2>
             <ul className="space-y-3 text-sm text-gray-600">
               {['CGST 9% + SGST 9% for intra-state transactions', 'IGST 18% for inter-state transactions', 'Auto GST calculation on all orders & invoices', 'GST liability summary in Day Book reports', 'GST-ready billing with CGST/SGST breakdown'].map(item => (
                 <li key={item} className="flex items-start gap-2">
@@ -180,8 +180,8 @@ export default function LandingPage() {
       <section id="pricing" className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Simple, Transparent Pricing</h2>
-            <p className="text-gray-500">All plans include GST compliance, inventory management, and 24/7 support.</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Affordable OMS Pricing for Indian SMEs</h2>
+            <p className="text-gray-500">All plans include GST compliance, inventory management, and 24/7 support. No hidden fees.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {plans.map(p => (
@@ -215,12 +215,12 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="py-20 px-6 bg-gradient-to-br from-blue-600 to-blue-800">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to streamline your operations?</h2>
-          <p className="text-blue-200 mb-8">Manage orders, inventory, and GST compliance with OMS Portal — built for Indian businesses.</p>
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to Automate GST Billing & Order Management?</h2>
+          <p className="text-blue-200 mb-8">Join hundreds of Indian SMEs managing orders, inventory, and GST compliance with OMS Portal — start free today.</p>
           <button onClick={() => navigate('/register')} className="bg-white text-blue-700 px-10 py-4 rounded-xl font-bold text-base hover:bg-blue-50 transition-all shadow-lg">
-            Get Started →
+            Start Free Trial →
           </button>
-          <p className="text-blue-300 text-xs mt-4">Create your organisation in seconds</p>
+          <p className="text-blue-300 text-xs mt-4">Create your organisation in seconds. No credit card required.</p>
         </div>
       </section>
 
@@ -235,41 +235,41 @@ export default function LandingPage() {
                 <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">O</div>
                 <span className="text-white font-semibold">OMS Portal</span>
               </div>
-              <p className="text-xs text-gray-500">GST-ready Order Management System built for Indian businesses.</p>
+              <p className="text-xs text-gray-500">GST-ready Order Management System for Indian SMEs. Automate billing, track inventory, manage orders.</p>
             </div>
             <div>
               <div className="text-white text-sm font-semibold mb-3">Product</div>
               <div className="space-y-2 text-sm">
-                <button onClick={() => navigate('/features')} className="block hover:text-white transition-colors">Features</button>
-                <button onClick={() => navigate('/pricing')} className="block hover:text-white transition-colors">Pricing</button>
-                <button onClick={() => navigate('/book-demo')} className="block hover:text-white transition-colors">Book Demo</button>
+                <a href="/features" className="block hover:text-white transition-colors">OMS Features</a>
+                <a href="/pricing" className="block hover:text-white transition-colors">Pricing Plans</a>
+                <a href="/book-demo" className="block hover:text-white transition-colors">Book Free Demo</a>
               </div>
             </div>
             <div>
               <div className="text-white text-sm font-semibold mb-3">Account</div>
               <div className="space-y-2 text-sm">
-                <button onClick={() => navigate('/login')} className="block hover:text-white transition-colors">Sign In</button>
-                <button onClick={() => navigate('/register')} className="block hover:text-white transition-colors">Register</button>
-                <button onClick={() => navigate('/forgot-password')} className="block hover:text-white transition-colors">Reset Password</button>
+                <a href="/login" className="block hover:text-white transition-colors">Sign In</a>
+                <a href="/register" className="block hover:text-white transition-colors">Register Free</a>
+                <a href="/forgot-password" className="block hover:text-white transition-colors">Reset Password</a>
               </div>
             </div>
             <div>
               <div className="text-white text-sm font-semibold mb-3">Legal</div>
               <div className="space-y-2 text-sm">
-                <button onClick={() => navigate('/privacy-policy')} className="block hover:text-white transition-colors">Privacy Policy</button>
-                <button onClick={() => navigate('/terms')} className="block hover:text-white transition-colors">Terms of Use</button>
-                <button onClick={() => navigate('/refund-policy')} className="block hover:text-white transition-colors">Refund Policy</button>
-                <button onClick={() => navigate('/cookie-policy')} className="block hover:text-white transition-colors">Cookie Policy</button>
-                <button onClick={() => navigate('/contact')} className="block hover:text-white transition-colors">Contact Us</button>
+                <a href="/privacy-policy" className="block hover:text-white transition-colors">Privacy Policy</a>
+                <a href="/terms" className="block hover:text-white transition-colors">Terms of Use</a>
+                <a href="/refund-policy" className="block hover:text-white transition-colors">Refund Policy</a>
+                <a href="/cookie-policy" className="block hover:text-white transition-colors">Cookie Policy</a>
+                <a href="/contact" className="block hover:text-white transition-colors">Contact Us</a>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm">© {new Date().getFullYear()} OMS Portal. All rights reserved.</p>
+            <p className="text-sm">© {new Date().getFullYear()} OMS Portal by Digital AdWords. GST-Ready Order Management for Indian SMEs.</p>
             <div className="flex gap-6 text-sm">
-              <button onClick={() => navigate('/privacy-policy')} className="hover:text-white transition-colors">Privacy</button>
-              <button onClick={() => navigate('/terms')} className="hover:text-white transition-colors">Terms</button>
-              <button onClick={() => navigate('/contact')} className="hover:text-white transition-colors">Contact</button>
+              <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms</a>
+              <a href="/contact" className="hover:text-white transition-colors">Contact</a>
             </div>
           </div>
         </div>

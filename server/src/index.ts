@@ -42,9 +42,17 @@ app.use(helmet());
 app.use(cookieParser());
 
 // ── CORS ───────────────────────────────────────────────
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000').split(',').map(o => o.trim());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://oms.digitaladwords.in',
+  'https://oms-portal.digitaladwords.in',
+  'https://oms-portal-client.vercel.app',
+  ...(process.env.CLIENT_URL || '').split(',').map(o => o.trim())
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, cb) => {
+    // Allow requests with no origin (like mobile apps or curl)
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
@@ -78,7 +86,7 @@ const apiLimiter = rateLimit({
 
 const chatbotLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 10,
+  max: 30, // Increased from 10 to 30
   message: { message: 'Too many chatbot requests, please slow down' },
   standardHeaders: true,
   legacyHeaders: false,

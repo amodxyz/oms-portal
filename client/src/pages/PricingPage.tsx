@@ -34,11 +34,11 @@ const Footer = () => {
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">O</div>
           <span className="text-white font-semibold">OMS Portal</span>
         </div>
-        <p className="text-sm">© {new Date().getFullYear()} OMS Portal. Built for Indian businesses.</p>
+        <p className="text-sm">© {new Date().getFullYear()} OMS Portal by Digital AdWords. GST-Ready OMS for Indian SMEs.</p>
         <div className="flex gap-6 text-sm">
-          <button onClick={() => navigate('/features')} className="hover:text-white transition-colors">Features</button>
-          <button onClick={() => navigate('/pricing')} className="hover:text-white transition-colors">Pricing</button>
-          <button onClick={() => navigate('/login')} className="hover:text-white transition-colors">Login</button>
+          <a href="/features" className="hover:text-white transition-colors">OMS Features</a>
+          <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
+          <a href="/contact" className="hover:text-white transition-colors">Contact</a>
         </div>
       </div>
     </footer>
@@ -112,12 +112,14 @@ const plans = [
 ];
 
 const faqs = [
-  { q: 'Is there a free trial?', a: 'Yes — you can register and use OMS Portal free for 14 days. No credit card required.' },
-  { q: 'Can I change my plan later?', a: 'Absolutely. You can upgrade or downgrade your plan at any time from the billing section.' },
-  { q: 'Is GST included in the pricing?', a: 'The prices shown are exclusive of GST. 18% GST will be added at checkout as per Indian tax laws.' },
-  { q: 'What payment methods do you accept?', a: 'We accept UPI, Net Banking, Credit/Debit cards, and Razorpay.' },
-  { q: 'Is my data secure?', a: 'Yes. All data is encrypted, stored on secure PostgreSQL servers, and fully isolated per organisation.' },
-  { q: 'Can multiple users access the same account?', a: 'Yes. Each plan includes a set number of users with role-based access (Admin, Manager, Staff).' },
+  { q: 'Is there a free trial?', a: 'Yes — you can register and use OMS Portal free for 14 days. No credit card required. All features including GST invoicing and inventory management are available during the trial.' },
+  { q: 'Is Digital AdWords OMS GST-compliant?', a: 'Yes. The OMS auto-generates GST-compliant invoices with CGST, SGST, and IGST calculations. It includes a Day Book with GST liability reports, making GST return filing easy for Indian SMEs.' },
+  { q: 'Can I change my plan later?', a: 'Absolutely. You can upgrade or downgrade your plan at any time from the billing section without any data loss.' },
+  { q: 'Is GST included in the pricing shown?', a: 'The prices shown are exclusive of GST. 18% GST will be added at checkout as per Indian tax laws. You will receive a GST invoice for your subscription.' },
+  { q: 'What payment methods do you accept?', a: 'We accept UPI, Net Banking, Credit/Debit cards, and Razorpay — all major Indian payment methods are supported.' },
+  { q: 'Is my business data secure?', a: 'Yes. All data is encrypted at rest and in transit, stored on secure PostgreSQL servers, and fully isolated per organisation with role-based access control.' },
+  { q: 'Can I manage inventory across multiple locations?', a: 'Yes. The inventory module supports multi-location stock tracking with low-stock alerts, stock transfers between branches, and real-time stock summaries.' },
+  { q: 'Is this OMS suitable for small businesses and startups in India?', a: 'Yes. The Starter plan at ₹29/month is designed for small businesses and startups. It includes GST invoicing, order management, inventory tracking, and customer management for up to 5 users.' },
 ];
 
 export default function PricingPage() {
@@ -135,10 +137,10 @@ export default function PricingPage() {
           Simple Pricing
         </span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-          Transparent, No Surprises
+          Affordable OMS Pricing for Indian Small Businesses
         </h1>
         <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">
-          All plans include GST compliance, inventory management, and full support. Pay monthly or save 20% annually.
+          All plans include GST compliance, inventory management, and full support. Plans starting from ₹29/month — pay monthly or save 20% annually.
         </p>
 
         {/* Toggle */}
@@ -196,7 +198,7 @@ export default function PricingPage() {
       {/* All plans include */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-10">All Plans Include</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-10">Everything Included — GST, Inventory & More</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { icon: '🔒', title: 'Secure & Encrypted', desc: 'Data encrypted at rest and in transit' },
@@ -221,7 +223,7 @@ export default function PricingPage() {
       {/* FAQ */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">FAQs — GST Billing & Order Management Software</h2>
           <div className="space-y-3">
             {faqs.map((faq, i) => (
               <div key={i} className="border border-gray-200 rounded-xl overflow-hidden">
@@ -243,8 +245,8 @@ export default function PricingPage() {
 
       {/* CTA */}
       <section className="py-20 px-6 bg-gradient-to-br from-blue-600 to-blue-800 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Still have questions?</h2>
-        <p className="text-blue-200 mb-8">Book a free demo and we'll walk you through everything.</p>
+        <h2 className="text-3xl font-bold text-white mb-4">See the OMS in Action — Book a Free Demo</h2>
+        <p className="text-blue-200 mb-8">Book a free demo and we'll walk you through GST invoicing, inventory management, and order tracking tailored for your Indian business.</p>
         <div className="flex gap-4 justify-center">
           <button onClick={() => navigate('/book-demo')} className="bg-white text-blue-700 px-8 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-lg">
             Book a Demo →

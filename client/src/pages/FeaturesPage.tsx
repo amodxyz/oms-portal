@@ -34,11 +34,11 @@ const Footer = () => {
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">O</div>
           <span className="text-white font-semibold">OMS Portal</span>
         </div>
-        <p className="text-sm">© {new Date().getFullYear()} OMS Portal. Built for Indian businesses.</p>
+        <p className="text-sm">© {new Date().getFullYear()} OMS Portal by Digital AdWords. GST-Ready OMS for Indian SMEs.</p>
         <div className="flex gap-6 text-sm">
-          <button onClick={() => navigate('/features')} className="hover:text-white transition-colors">Features</button>
-          <button onClick={() => navigate('/pricing')} className="hover:text-white transition-colors">Pricing</button>
-          <button onClick={() => navigate('/login')} className="hover:text-white transition-colors">Login</button>
+          <a href="/features" className="hover:text-white transition-colors">OMS Features</a>
+          <a href="/pricing" className="hover:text-white transition-colors">Pricing</a>
+          <a href="/contact" className="hover:text-white transition-colors">Contact</a>
         </div>
       </div>
     </footer>
@@ -188,10 +188,10 @@ export default function FeaturesPage() {
           Complete Feature Set
         </span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-          Everything Your Business Needs
+          All-in-One OMS Features Built for Indian SMEs
         </h1>
         <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">
-          8 powerful modules covering every aspect of your operations — from raw materials to customer delivery.
+          8 powerful modules covering every aspect of your Indian business — GST invoicing, inventory tracking, order management, production, and more.
         </p>
         <div className="flex gap-4 justify-center">
           <button onClick={() => navigate('/register')} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
@@ -250,8 +250,8 @@ export default function FeaturesPage() {
       {/* GST Section */}
       <section className="py-16 px-6 bg-gradient-to-r from-orange-50 to-yellow-50 border-y border-orange-100">
         <div className="max-w-4xl mx-auto text-center">
-          <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">GST Compliant</span>
-          <h2 className="text-2xl font-bold text-gray-900 mt-2 mb-8">Built for Indian Tax Laws</h2>
+          <span className="text-xs font-semibold text-orange-600 uppercase tracking-wide">GST Compliant Software</span>
+          <h2 className="text-2xl font-bold text-gray-900 mt-2 mb-8">GST Billing Software Built for Indian Tax Laws</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
               { title: 'Intra-State', tax: 'CGST 9% + SGST 9%', desc: 'Auto-calculated on all intra-state orders and invoices' },
@@ -270,8 +270,8 @@ export default function FeaturesPage() {
 
       {/* CTA */}
       <section className="py-20 px-6 bg-gradient-to-br from-blue-600 to-blue-800 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Ready to get started?</h2>
-        <p className="text-blue-200 mb-8">Join businesses already managing their operations with OMS Portal.</p>
+        <h2 className="text-3xl font-bold text-white mb-4">Start Managing Orders & GST Billing — Free</h2>
+        <p className="text-blue-200 mb-8">Join Indian SMEs already automating GST invoicing and order management with OMS Portal.</p>
         <div className="flex gap-4 justify-center">
           <button onClick={() => navigate('/register')} className="bg-white text-blue-700 px-8 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-lg">
             Start Free Trial →

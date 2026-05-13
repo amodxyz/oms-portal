@@ -24,3 +24,5 @@ Allow: /privacy-policy
 Allow: /terms
 Allow: /refund-policy
 Allow: /cookie-policy
+
+Sitemap: https://oms.digitaladwords.in/sitemap.xml
