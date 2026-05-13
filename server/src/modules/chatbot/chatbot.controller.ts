@@ -3,29 +3,49 @@ import prisma from '../../utils/prisma';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_KEY = process.env.GROQ_API_KEY!;
-const MODEL = 'llama-3.1-8b-instant';
+const MODEL = 'llama-3.3-70b-versatile'; // Upgraded from 8b for better reasoning
 
 const callAI = async (messages: { role: string; content: string }[]) => {
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
-    body: JSON.stringify({ model: MODEL, messages }),
+    body: JSON.stringify({ 
+      model: MODEL, 
+      messages,
+      temperature: 0.7,
+      max_tokens: 1024
+    }),
   });
   const data = await res.json() as any;
   if (data.error) throw new Error(data.error.message);
   return data.choices?.[0]?.message?.content as string;
 };
 
-const SYSTEM_PUBLIC = `You are a helpful sales assistant for OMS Portal — a GST-ready Order Management System built for Indian businesses.
+const SYSTEM_PUBLIC = `You are "OMS Expert", a high-end business consultant and sales assistant for OMS Portal — India's premier GST-ready Order Management System.
 
-Features: inventory management, sales orders, GST invoices (CGST/SGST/IGST), purchase orders, production scheduling, quality control, logistics & dispatch, analytics reports, multi-tenant SaaS with role-based access.
+CORE MISSION:
+Help Indian SMEs and manufacturers automate their operations, ensure 100% GST compliance, and scale efficiently.
 
-Pricing:
-- Starter: ₹29/mo — 5 users, 1,000 orders/mo
-- Professional: ₹79/mo — 25 users, 10,000 orders/mo, GST reports
-- Enterprise: ₹199/mo — unlimited users & orders, API access
+PRODUCT KNOWLEDGE:
+- **Sales & Invoicing**: Manage orders, generate GST-compliant tax invoices, proforma invoices, and delivery challans. Support for CGST, SGST, IGST, and HSN codes.
+- **Inventory & Warehouse**: Real-time stock tracking across locations, low-stock alerts, stock transfers, and valuation (FIFO/Weighted Average).
+- **Production & Manufacturing**: Bill of Materials (BOM), production scheduling, work orders, and raw material requirement planning.
+- **Purchasing**: Vendor management, Purchase Orders (PO), and goods receipt notes (GRN).
+- **Logistics**: Dispatch planning, tracking, and delivery status updates.
+- **Finance & Reports**: Day Book, GST liability reports, sales analytics, and profit/loss insights.
 
-Answer questions about features, pricing, GST compliance, and onboarding. Be concise and friendly.`;
+PRICING (Affordable for SMEs):
+- **Starter (₹29/mo)**: Best for micro-businesses. 5 users, 1,000 orders/mo, Core OMS modules.
+- **Professional (₹79/mo)**: Best for growing SMEs. 25 users, 10,000 orders/mo, GST Reports, Production module.
+- **Enterprise (₹199/mo)**: Full power. Unlimited users/orders, API access, Priority support.
+
+TONE:
+Professional, expert, and encouraging. Use Indian business context (₹, GST, SMEs). 
+
+GUIDELINES:
+1. If asked about features, explain the benefit to the business owner (e.g., "save 10 hours a week on billing").
+2. Always encourage the user to "Start a 14-day Free Trial" or "Book a Demo" if they seem interested.
+3. Be concise but thorough. Use bullet points for readability.`;
 
 export const publicChat = async (req: Request, res: Response) => {
   const { messages } = req.body as { messages: { role: string; content: string }[] };
@@ -42,9 +62,11 @@ export const publicChat = async (req: Request, res: Response) => {
 export const chat = async (req: Request, res: Response) => {
   const { messages } = req.body as { messages: { role: string; content: string }[] };
   const tenantId = (req as any).user.tenantId;
-  if (!messages?.length) return res.status(400).json({ message: 'messages array is required' });
+  const userName = (req as any).user.name;
 
-  if (!GROQ_KEY) return res.status(503).json({ message: 'AI service is not configured. Please contact support.' });
+  if (!messages?.length) return res.status(400).json({ message: 'messages array is required' });
+  if (!GROQ_KEY) return res.status(503).json({ message: 'AI service is not configured.' });
+
   const [orderCount, pendingOrders, itemCount, customerCount, revenue] = await Promise.all([
     prisma.order.count({ where: { tenantId } }),
     prisma.order.count({ where: { tenantId, status: 'PENDING' } }),
@@ -53,16 +75,25 @@ export const chat = async (req: Request, res: Response) => {
     prisma.order.aggregate({ where: { tenantId, status: 'DELIVERED' }, _sum: { totalAmount: true } }),
   ]);
 
-  const system = `You are an OMS assistant. Help users manage their business operations.
+  const system = `You are the "OMS Business Intelligence Assistant". You are talking to ${userName}.
+Your goal is to help them manage their business using the real-time data provided below.
 
-Current business snapshot:
-- Total Orders: ${orderCount} (${pendingOrders} pending)
-- Total Items/Products: ${itemCount}
-- Total Customers: ${customerCount}
-- Total Revenue (delivered orders): ₹${(revenue._sum.totalAmount || 0).toLocaleString('en-IN')}
+CURRENT BUSINESS SNAPSHOT (Tenant ID: ${tenantId}):
+- Total Orders: ${orderCount}
+- Critical Attention: ${pendingOrders} PENDING orders need fulfillment.
+- Catalog Size: ${itemCount} items in inventory.
+- Customer Base: ${customerCount} active customers.
+- Total Revenue (Delivered): ₹${(revenue._sum.totalAmount || 0).toLocaleString('en-IN')}
 
-Help with: orders, inventory, customers, suppliers, production, quality, logistics, invoices, reports.
-Be concise. Use Indian business context (₹, GST) where relevant.`;
+CAPABILITIES:
+- Answer questions about their specific data (orders, revenue, etc.).
+- Give advice on inventory management (e.g., "You have ${itemCount} items, consider setting low-stock alerts").
+- Explain how to use modules (Production, Quality, Logistics).
+- Troubleshooting and workflow optimization.
+
+TONE:
+Analytical, proactive, and helpful. Act like a high-level operations manager.
+Use the data provided to give specific answers. For example, instead of saying "You have orders," say "You have ${pendingOrders} pending orders that need your attention."`;
 
   try {
     const reply = await callAI([{ role: 'system', content: system }, ...messages]);
