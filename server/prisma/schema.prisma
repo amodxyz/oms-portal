@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -18,35 +18,36 @@ model SuperAdmin {
 }
 
 model Tenant {
-  id              String         @id @default(cuid())
-  name            String
-  slug            String         @unique
-  email           String         @unique
-  phone           String?
-  address         String?
-  state           String?
-  gstin           String?
-  isActive        Boolean        @default(true)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  users           User[]
-  categories      Category[]
-  items           Item[]
-  customers       Customer[]
-  orders          Order[]
-  suppliers       Supplier[]
-  purchaseOrders  PurchaseOrder[]
+  id               String            @id @default(cuid())
+  name             String
+  slug             String            @unique
+  email            String            @unique
+  phone            String?
+  address          String?
+  gstin            String?
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  state            String?
+  categories       Category[]
+  customers        Customer[]
+  dispatches       Dispatch[]
+  inspections      Inspection[]
+  items            Item[]
+  orders           Order[]
   productionOrders ProductionOrder[]
-  inspections     Inspection[]
-  transporters    Transporter[]
-  dispatches      Dispatch[]
-  subscriptions   Subscription[]
+  purchaseOrders   PurchaseOrder[]
+  subscriptions    Subscription[]
+  suppliers        Supplier[]
+  transporters     Transporter[]
+  users            User[]
+
+  @@map("Tenant")
 }
 
 model User {
   id                String         @id @default(cuid())
   tenantId          String
-  tenant            Tenant         @relation(fields: [tenantId], references: [id])
   name              String
   email             String
   password          String
@@ -60,27 +61,29 @@ model User {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   refreshTokens     RefreshToken[]
+  tenant            Tenant         @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, email])
+  @@map("User")
 }
 
 model RefreshToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Category {
   id          String   @id @default(cuid())
   tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
   name        String
   description String?
-  items       Item[]
   createdAt   DateTime @default(now())
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  items       Item[]
 
   @@unique([tenantId, name])
 }
@@ -88,27 +91,27 @@ model Category {
 model Item {
   id            String         @id @default(cuid())
   tenantId      String
-  tenant        Tenant         @relation(fields: [tenantId], references: [id])
   code          String
   name          String
   description   String?
   categoryId    String
-  category      Category       @relation(fields: [categoryId], references: [id])
   unit          String
   costPrice     Float
   sellingPrice  Float
   minStock      Int            @default(0)
   isActive      Boolean        @default(true)
   rawMaterial   Boolean        @default(false)
-  hsnCode       String?
-  gstRate       Float          @default(18)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  stockEntries  Stock[]
-  bomItems      BOMItem[]      @relation("BOMParent")
+  gstRate       Float          @default(18)
+  hsnCode       String?
   bomUsedIn     BOMItem[]      @relation("BOMComponent")
+  bomItems      BOMItem[]      @relation("BOMParent")
+  category      Category       @relation(fields: [categoryId], references: [id])
+  tenant        Tenant         @relation(fields: [tenantId], references: [id])
   orderItems    OrderItem[]
   purchaseItems PurchaseItem[]
+  stockEntries  Stock[]
 
   @@unique([tenantId, code])
 }
@@ -116,13 +119,13 @@ model Item {
 model Stock {
   id        String   @id @default(cuid())
   itemId    String
-  item      Item     @relation(fields: [itemId], references: [id])
   quantity  Float
   location  String?
   type      String
   reference String?
   note      String?
   createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id])
 }
 
 model BOM {
@@ -130,39 +133,39 @@ model BOM {
   tenantId    String
   name        String
   description String?
-  items       BOMItem[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  items       BOMItem[]
 }
 
 model BOMItem {
   id          String @id @default(cuid())
   bomId       String
-  bom         BOM    @relation(fields: [bomId], references: [id])
   parentId    String
-  parent      Item   @relation("BOMParent", fields: [parentId], references: [id])
   componentId String
-  component   Item   @relation("BOMComponent", fields: [componentId], references: [id])
   quantity    Float
   unit        String
+  bom         BOM    @relation(fields: [bomId], references: [id])
+  component   Item   @relation("BOMComponent", fields: [componentId], references: [id])
+  parent      Item   @relation("BOMParent", fields: [parentId], references: [id])
 }
 
 model Customer {
   id        String   @id @default(cuid())
   tenantId  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   code      String
   name      String
   email     String?
   phone     String?
   address   String?
   city      String?
-  state     String?
   country   String?
-  gstin     String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  gstin     String?
+  state     String?
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   orders    Order[]
 
   @@unique([tenantId, code])
@@ -171,10 +174,8 @@ model Customer {
 model Order {
   id          String      @id @default(cuid())
   tenantId    String
-  tenant      Tenant      @relation(fields: [tenantId], references: [id])
   orderNo     String
   customerId  String
-  customer    Customer    @relation(fields: [customerId], references: [id])
   status      String      @default("PENDING")
   orderDate   DateTime    @default(now())
   dueDate     DateTime?
@@ -182,11 +183,13 @@ model Order {
   discount    Float       @default(0)
   tax         Float       @default(0)
   notes       String?
-  items       OrderItem[]
-  invoice     Invoice?
-  dispatch    Dispatch?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  dispatch    Dispatch?
+  invoice     Invoice?
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  items       OrderItem[]
 
   @@unique([tenantId, orderNo])
 }
@@ -194,40 +197,39 @@ model Order {
 model OrderItem {
   id        String @id @default(cuid())
   orderId   String
-  order     Order  @relation(fields: [orderId], references: [id])
   itemId    String
-  item      Item   @relation(fields: [itemId], references: [id])
   quantity  Float
   unitPrice Float
   total     Float
+  item      Item   @relation(fields: [itemId], references: [id])
+  order     Order  @relation(fields: [orderId], references: [id])
 }
 
 model Invoice {
-  id             String   @id @default(cuid())
-  invoiceNo      String   @unique
-  orderId        String   @unique
-  order          Order    @relation(fields: [orderId], references: [id])
-  issueDate      DateTime @default(now())
-  dueDate        DateTime
-  taxableAmount  Float    @default(0)
-  cgst           Float    @default(0)
-  sgst           Float    @default(0)
-  igst           Float    @default(0)
-  totalGst       Float    @default(0)
-  amount         Float
-  paid           Float    @default(0)
-  status         String   @default("UNPAID")
-  gstType        String   @default("CGST_SGST")
-  placeOfSupply  String?
-  customerGstin  String?
-  notes          String?
-  createdAt      DateTime @default(now())
+  id            String   @id @default(cuid())
+  invoiceNo     String   @unique
+  orderId       String   @unique
+  issueDate     DateTime @default(now())
+  dueDate       DateTime
+  amount        Float
+  paid          Float    @default(0)
+  status        String   @default("UNPAID")
+  createdAt     DateTime @default(now())
+  cgst          Float    @default(0)
+  customerGstin String?
+  gstType       String   @default("CGST_SGST")
+  igst          Float    @default(0)
+  notes         String?
+  placeOfSupply String?
+  sgst          Float    @default(0)
+  taxableAmount Float    @default(0)
+  totalGst      Float    @default(0)
+  order         Order    @relation(fields: [orderId], references: [id])
 }
 
 model Supplier {
   id             String          @id @default(cuid())
   tenantId       String
-  tenant         Tenant          @relation(fields: [tenantId], references: [id])
   code           String
   name           String
   email          String?
@@ -239,6 +241,7 @@ model Supplier {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   purchaseOrders PurchaseOrder[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, code])
 }
@@ -246,18 +249,18 @@ model Supplier {
 model PurchaseOrder {
   id           String         @id @default(cuid())
   tenantId     String
-  tenant       Tenant         @relation(fields: [tenantId], references: [id])
   poNo         String
   supplierId   String
-  supplier     Supplier       @relation(fields: [supplierId], references: [id])
   status       String         @default("DRAFT")
   orderDate    DateTime       @default(now())
   expectedDate DateTime?
   totalAmount  Float
   notes        String?
-  items        PurchaseItem[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  items        PurchaseItem[]
+  supplier     Supplier       @relation(fields: [supplierId], references: [id])
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, poNo])
 }
@@ -265,19 +268,18 @@ model PurchaseOrder {
 model PurchaseItem {
   id              String        @id @default(cuid())
   purchaseOrderId String
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
   itemId          String
-  item            Item          @relation(fields: [itemId], references: [id])
   quantity        Float
   unitPrice       Float
   total           Float
   received        Float         @default(0)
+  item            Item          @relation(fields: [itemId], references: [id])
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
 
 model ProductionOrder {
   id          String               @id @default(cuid())
   tenantId    String
-  tenant      Tenant               @relation(fields: [tenantId], references: [id])
   orderNo     String
   productName String
   quantity    Float
@@ -288,9 +290,10 @@ model ProductionOrder {
   priority    String               @default("NORMAL")
   assignedTo  String?
   notes       String?
-  resources   ProductionResource[]
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
+  tenant      Tenant               @relation(fields: [tenantId], references: [id])
+  resources   ProductionResource[]
 
   @@unique([tenantId, orderNo])
 }
@@ -298,17 +301,16 @@ model ProductionOrder {
 model ProductionResource {
   id                String          @id @default(cuid())
   productionOrderId String
-  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
   resourceName      String
   resourceType      String
   quantity          Float
   unit              String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
 }
 
 model Inspection {
   id          String           @id @default(cuid())
   tenantId    String
-  tenant      Tenant           @relation(fields: [tenantId], references: [id])
   refNo       String
   type        String
   referenceId String?
@@ -316,8 +318,9 @@ model Inspection {
   date        DateTime         @default(now())
   status      String           @default("PENDING")
   notes       String?
-  items       InspectionItem[]
   createdAt   DateTime         @default(now())
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  items       InspectionItem[]
 
   @@unique([tenantId, refNo])
 }
@@ -325,18 +328,17 @@ model Inspection {
 model InspectionItem {
   id           String     @id @default(cuid())
   inspectionId String
-  inspection   Inspection @relation(fields: [inspectionId], references: [id])
   parameter    String
   expected     String
   actual       String?
   passed       Boolean?
   remarks      String?
+  inspection   Inspection @relation(fields: [inspectionId], references: [id])
 }
 
 model Transporter {
   id         String     @id @default(cuid())
   tenantId   String
-  tenant     Tenant     @relation(fields: [tenantId], references: [id])
   code       String
   name       String
   phone      String?
@@ -345,6 +347,7 @@ model Transporter {
   isActive   Boolean    @default(true)
   createdAt  DateTime   @default(now())
   dispatches Dispatch[]
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, code])
 }
@@ -356,30 +359,30 @@ model Plan {
   price         Float
   billingCycle  String         @default("MONTHLY")
   features      String
-  maxUsers      Int            @default(5)
-  maxOrders     Int            @default(1000)
   isActive      Boolean        @default(true)
-  isPopular     Boolean        @default(false)
-  sortOrder     Int            @default(0)
   createdAt     DateTime       @default(now())
+  isPopular     Boolean        @default(false)
+  maxOrders     Int            @default(1000)
+  maxUsers      Int            @default(5)
+  sortOrder     Int            @default(0)
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]
 }
 
 model Coupon {
-  id              String    @id @default(cuid())
-  code            String    @unique
-  description     String?
-  discountType    String    @default("PERCENT")
-  discountValue   Float
-  maxUses         Int?
-  usedCount       Int       @default(0)
-  minAmount       Float     @default(0)
-  validFrom       DateTime  @default(now())
-  validUntil      DateTime?
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  code          String    @unique
+  description   String?
+  discountType  String    @default("PERCENT")
+  discountValue Float
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  minAmount     Float     @default(0)
+  validFrom     DateTime  @default(now())
+  validUntil    DateTime?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model PaymentGateway {
@@ -388,7 +391,7 @@ model PaymentGateway {
   displayName String
   isActive    Boolean  @default(false)
   isTestMode  Boolean  @default(true)
-  config      String // JSON: keys, secrets (encrypted)
+  config      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -402,22 +405,20 @@ model SystemSetting {
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  actor      String
-  action     String
-  entity     String
-  entityId   String?
-  details    String?
-  ip         String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  actor     String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ip        String?
+  createdAt DateTime @default(now())
 }
 
 model Subscription {
   id             String          @id @default(cuid())
   tenantId       String
-  tenant         Tenant          @relation(fields: [tenantId], references: [id])
   planId         String
-  plan           Plan            @relation(fields: [planId], references: [id])
   status         String          @default("ACTIVE")
   startDate      DateTime        @default(now())
   endDate        DateTime?
@@ -425,12 +426,13 @@ model Subscription {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   billingRecords BillingRecord[]
+  plan           Plan            @relation(fields: [planId], references: [id])
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
 }
 
 model BillingRecord {
   id             String       @id @default(cuid())
   subscriptionId String
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
   invoiceNo      String       @unique
   amount         Float
   tax            Float        @default(0)
@@ -441,17 +443,15 @@ model BillingRecord {
   paymentMethod  String?
   notes          String?
   createdAt      DateTime     @default(now())
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
 }
 
 model Dispatch {
   id            String      @id @default(cuid())
   tenantId      String
-  tenant        Tenant      @relation(fields: [tenantId], references: [id])
   dispatchNo    String
   orderId       String      @unique
-  order         Order       @relation(fields: [orderId], references: [id])
   transporterId String
-  transporter   Transporter @relation(fields: [transporterId], references: [id])
   status        String      @default("PENDING")
   dispatchDate  DateTime    @default(now())
   deliveryDate  DateTime?
@@ -459,6 +459,9 @@ model Dispatch {
   notes         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  order         Order       @relation(fields: [orderId], references: [id])
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  transporter   Transporter @relation(fields: [transporterId], references: [id])
 
   @@unique([tenantId, dispatchNo])
 }
