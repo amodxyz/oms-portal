@@ -39,29 +39,51 @@ export const register = async (req: Request, res: Response) => {
   const existing = await prisma.tenant.findUnique({ where: { email } });
   if (existing) return res.status(400).json({ message: 'An organisation with this email already exists' });
 
-  const tenant = await prisma.tenant.create({ data: { name: orgName, slug, email, phone, gstin } });
-  const hashed = await bcrypt.hash(password, 12);
-  const verifyToken = randomToken();
-  const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+  try {
+    const { tenant, user } = await prisma.$transaction(async (tx) => {
+      const newTenant = await tx.tenant.create({ 
+        data: { name: orgName, slug, email, phone, gstin } 
+      });
 
-  const user = await prisma.user.create({
-    data: { tenantId: tenant.id, name: 'Admin', email, password: hashed, role: 'ADMIN', verifyToken, verifyTokenExpiry },
-  });
+      const hashed = await bcrypt.hash(password, 12);
+      const verifyToken = randomToken();
+      const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  await sendVerificationEmail(email, verifyToken, orgName);
+      const newUser = await tx.user.create({
+        data: { 
+          tenantId: newTenant.id, 
+          name: 'Admin', 
+          email, 
+          password: hashed, 
+          role: 'ADMIN', 
+          verifyToken, 
+          verifyTokenExpiry 
+        },
+      });
 
-  const accessToken = signAccess({ id: user.id, role: user.role, email: user.email, tenantId: tenant.id });
-  const refreshToken = signRefresh(user.id);
-  const expiresAt = new Date(Date.now() + Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30) * 24 * 60 * 60 * 1000);
-  await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+      return { tenant: newTenant, user: newUser };
+    });
 
-  setRefreshCookie(res, refreshToken);
-  res.status(201).json({
-    accessToken,
-    user: { id: user.id, name: user.name, email: user.email, role: user.role, tenantId: tenant.id, emailVerified: false },
-    tenant: { id: tenant.id, name: tenant.name, slug: tenant.slug },
-    message: 'Registration successful. Please check your email to verify your account.',
-  });
+    // Send email outside transaction
+    await sendVerificationEmail(email, user.verifyToken!, orgName);
+
+    const accessToken = signAccess({ id: user.id, role: user.role, email: user.email, tenantId: tenant.id });
+    const refreshToken = signRefresh(user.id);
+    const expiresAt = new Date(Date.now() + Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30) * 24 * 60 * 60 * 1000);
+    
+    await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+
+    setRefreshCookie(res, refreshToken);
+    res.status(201).json({
+      accessToken,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, tenantId: tenant.id, emailVerified: false },
+      tenant: { id: tenant.id, name: tenant.name, slug: tenant.slug },
+      message: 'Registration successful. Please check your email to verify your account.',
+    });
+  } catch (err: any) {
+    logger.error('Registration error:', err);
+    res.status(500).json({ message: 'Registration failed. Please try again later.' });
+  }
 };
 
 // ── Login ──────────────────────────────────────────────

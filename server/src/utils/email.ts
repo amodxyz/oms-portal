@@ -22,8 +22,10 @@ const send = async (to: string, subject: string, html: string) => {
     logger.info(`Email sent to ${to}: ${subject}`);
   } catch (err) {
     logger.error(`Failed to send email to ${to}:`, err);
-    // Don't throw — email failure should not crash the request in dev
-    if (process.env.NODE_ENV === 'production') throw err;
+    // Log error but don't throw to avoid crashing the request
+    if (process.env.NODE_ENV === 'production') {
+      logger.error('Critical: Email failed in production environment');
+    }
   }
 };
 
