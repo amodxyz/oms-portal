@@ -1,24 +1,42 @@
 import { Request, Response } from 'express';
 import prisma from '../../utils/prisma';
+import logger from '../../utils/logger';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_KEY = process.env.GROQ_API_KEY!;
 const MODEL = 'llama-3.3-70b-versatile'; // Upgraded from 8b for better reasoning
 
 const callAI = async (messages: { role: string; content: string }[]) => {
-  const res = await fetch(GROQ_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
-    body: JSON.stringify({ 
-      model: MODEL, 
-      messages,
-      temperature: 0.7,
-      max_tokens: 1024
-    }),
-  });
-  const data = await res.json() as any;
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content as string;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      signal: controller.signal,
+      body: JSON.stringify({ 
+        model: MODEL, 
+        messages,
+        temperature: 0.7,
+        max_tokens: 1024
+      }),
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) {
+      const errorData = await res.json() as any;
+      throw new Error(errorData.error?.message || `Groq API error: ${res.status}`);
+    }
+
+    const data = await res.json() as any;
+    return data.choices?.[0]?.message?.content as string;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') throw new Error('AI request timed out');
+    throw error;
+  }
 };
 
 const SYSTEM_PUBLIC = `You are "OMS Expert", a high-end business consultant and sales assistant for OMS Portal — India's premier GST-ready Order Management System.
@@ -55,7 +73,8 @@ export const publicChat = async (req: Request, res: Response) => {
     const reply = await callAI([{ role: 'system', content: SYSTEM_PUBLIC }, ...messages]);
     res.json({ reply });
   } catch (e: any) {
-    res.status(502).json({ message: e.message });
+    logger.error(`Public Chat Error: ${e.message}`, { stack: e.stack });
+    res.status(502).json({ message: 'AI service temporarily unavailable. Please try again.' });
   }
 };
 
@@ -99,6 +118,7 @@ Use the data provided to give specific answers. For example, instead of saying "
     const reply = await callAI([{ role: 'system', content: system }, ...messages]);
     res.json({ reply });
   } catch (e: any) {
-    res.status(502).json({ message: e.message });
+    logger.error(`BI Chat Error [Tenant: ${tenantId}]: ${e.message}`, { stack: e.stack });
+    res.status(502).json({ message: 'Failed to generate BI insights. Please try again later.' });
   }
 };

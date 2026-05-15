@@ -8,6 +8,7 @@ import {
   getTenant, updateTenant,
 } from './auth.controller';
 import { authenticate, authorize } from '../../middleware/auth.middleware';
+import { checkPlanLimit } from '../../middleware/plan.middleware';
 import { validate, registerRules, loginRules, createUserRules, updateProfileRules, updateTenantRules, updateUserRules } from '../../middleware/validation.middleware';
 import { body } from 'express-validator';
 
@@ -34,7 +35,7 @@ router.post('/logout-all', authenticate, logoutAll);
 
 // Admin
 router.get('/users', authenticate, authorize('ADMIN'), getUsers);
-router.post('/users', authenticate, authorize('ADMIN'), createUserRules, validate, createUser);
+router.post('/users', authenticate, authorize('ADMIN'), checkPlanLimit('USERS'), createUserRules, validate, createUser);
 router.put('/users/:id', authenticate, authorize('ADMIN'), updateUserRules, validate, updateUser);
 router.get('/tenant', authenticate, getTenant);
 router.put('/tenant', authenticate, authorize('ADMIN'), updateTenantRules, validate, updateTenant);

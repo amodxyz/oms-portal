@@ -53,8 +53,12 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, cb) => {
     // Allow requests with no origin (like mobile apps or curl)
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origin ${origin} not allowed`));
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      // Return false instead of throwing to allow the middleware to handle it gracefully
+      cb(null, false);
+    }
   },
   credentials: true,
 }));

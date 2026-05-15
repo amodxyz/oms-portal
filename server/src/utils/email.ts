@@ -9,8 +9,12 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: process.env.NODE_ENV === 'production' },
 });
 
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
-const FROM = process.env.EMAIL_FROM || 'OMS Portal <noreply@omsportal.com>';
+const CLIENT_URL = (process.env.CLIENT_URL || 'http://localhost:3000')
+  .split(',')
+  .find(url => url.includes('digitaladwords.in')) || 
+  (process.env.CLIENT_URL || 'http://localhost:3000').split(',')[0].trim();
+
+const FROM = process.env.EMAIL_FROM || 'OMS Portal <noreply@digitaladwords.in>';
 
 const send = async (to: string, subject: string, html: string) => {
   try {
