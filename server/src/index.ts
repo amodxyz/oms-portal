@@ -119,9 +119,20 @@ app.use('/api/chatbot', chatbotRoutes);
 app.get('/api/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'OK', db: 'connected', timestamp: new Date() });
-  } catch {
-    res.status(503).json({ status: 'ERROR', db: 'disconnected', timestamp: new Date() });
+    const tenantCount = await prisma.tenant.count();
+    res.json({ 
+      status: 'OK', 
+      db: 'connected', 
+      tables: { tenant: 'exists', count: tenantCount },
+      timestamp: new Date() 
+    });
+  } catch (err: any) {
+    res.status(503).json({ 
+      status: 'ERROR', 
+      db: 'connected', 
+      error: err.message,
+      timestamp: new Date() 
+    });
   }
 });
 
