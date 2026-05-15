@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import prisma from '../../utils/prisma';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../../utils/email';
+import logger from '../../utils/logger';
 
 // ── Token helpers ──────────────────────────────────────
 const signAccess = (payload: { id: string; role: string; email: string; tenantId: string }) => {
@@ -36,18 +37,19 @@ export const register = async (req: Request, res: Response) => {
   const { orgName, email, password, phone, gstin } = req.body;
   const slug = orgName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 50) + '-' + Date.now();
 
-  const existing = await prisma.tenant.findUnique({ where: { email } });
-  if (existing) return res.status(400).json({ message: 'An organisation with this email already exists' });
-
   try {
+    const existing = await prisma.tenant.findUnique({ where: { email } });
+    if (existing) return res.status(400).json({ message: 'An organisation with this email already exists' });
+
+    // Prepare data outside transaction to keep it short and avoid timeouts
+    const hashed = await bcrypt.hash(password, 12);
+    const verifyToken = randomToken();
+    const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
     const { tenant, user } = await prisma.$transaction(async (tx) => {
       const newTenant = await tx.tenant.create({ 
         data: { name: orgName, slug, email, phone, gstin } 
       });
-
-      const hashed = await bcrypt.hash(password, 12);
-      const verifyToken = randomToken();
-      const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       const newUser = await tx.user.create({
         data: { 
@@ -62,10 +64,17 @@ export const register = async (req: Request, res: Response) => {
       });
 
       return { tenant: newTenant, user: newUser };
+    }, {
+      timeout: 10000 // 10 seconds timeout for serverless environments
     });
 
     // Send email outside transaction
-    await sendVerificationEmail(email, user.verifyToken!, orgName);
+    try {
+      await sendVerificationEmail(email, user.verifyToken!, orgName);
+    } catch (emailErr) {
+      logger.error('Failed to send verification email during registration:', emailErr);
+      // Don't fail registration if email fails, but maybe log it
+    }
 
     const accessToken = signAccess({ id: user.id, role: user.role, email: user.email, tenantId: tenant.id });
     const refreshToken = signRefresh(user.id);
@@ -82,7 +91,14 @@ export const register = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     logger.error('Registration error:', err);
-    res.status(500).json({ message: 'Registration failed. Please try again later.' });
+    // Provide more specific error message if possible
+    let message = 'Registration failed. Please try again later.';
+    if (err.code === 'P2002') {
+      message = 'An organisation with this name or email already exists.';
+    } else if (err.message) {
+      message = `Registration failed: ${err.message}`;
+    }
+    res.status(500).json({ message });
   }
 };
 
