@@ -104,26 +104,33 @@ export const register = async (req: Request, res: Response) => {
 
 // ── Login ──────────────────────────────────────────────
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  const user = await prisma.user.findFirst({ where: { email }, include: { tenant: true } });
-  if (!user || !user.isActive) return res.status(401).json({ message: 'Invalid credentials' });
+  try {
+    const { email, password } = req.body;
+    const user = await prisma.user.findFirst({ where: { email }, include: { tenant: true } });
+    if (!user || !user.isActive) return res.status(401).json({ message: 'Invalid credentials' });
 
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
 
-  if (!user.tenant.isActive) return res.status(403).json({ message: 'Organisation account is suspended' });
+    if (user.tenant && !user.tenant.isActive) {
+      return res.status(403).json({ message: 'Organisation account is suspended' });
+    }
 
-  const accessToken = signAccess({ id: user.id, role: user.role, email: user.email, tenantId: user.tenantId });
-  const refreshToken = signRefresh(user.id);
-  const expiresAt = new Date(Date.now() + Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30) * 24 * 60 * 60 * 1000);
-  await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+    const accessToken = signAccess({ id: user.id, role: user.role, email: user.email, tenantId: user.tenantId });
+    const refreshToken = signRefresh(user.id);
+    const expiresAt = new Date(Date.now() + Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 30) * 24 * 60 * 60 * 1000);
+    await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
 
-  setRefreshCookie(res, refreshToken);
-  res.json({
-    accessToken,
-    user: { id: user.id, name: user.name, email: user.email, role: user.role, tenantId: user.tenantId, emailVerified: user.emailVerified },
-    tenant: { id: user.tenant.id, name: user.tenant.name, slug: user.tenant.slug },
-  });
+    setRefreshCookie(res, refreshToken);
+    res.json({
+      accessToken,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, tenantId: user.tenantId, emailVerified: user.emailVerified },
+      tenant: user.tenant ? { id: user.tenant.id, name: user.tenant.name, slug: user.tenant.slug } : null,
+    });
+  } catch (err: any) {
+    logger.error('Login error:', err);
+    res.status(500).json({ message: err.message || 'Internal server error during login' });
+  }
 };
 
 // ── Refresh access token ───────────────────────────────
