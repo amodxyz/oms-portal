@@ -15,7 +15,12 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
     // Enforce tenant suspension on every authenticated request
     const tenant = await prisma.tenant.findUnique({ where: { id: decoded.tenantId }, select: { isActive: true } });
-    if (!tenant?.isActive) return res.status(403).json({ message: 'Organisation account is suspended' });
+    if (!tenant) {
+      return res.status(401).json({ message: 'Organisation not found. Please log in again.' });
+    }
+    if (!tenant.isActive) {
+      return res.status(403).json({ message: 'Organisation account is suspended' });
+    }
 
     req.user = decoded;
     next();

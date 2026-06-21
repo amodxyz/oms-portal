@@ -152,6 +152,9 @@ export const refresh = async (req: Request, res: Response) => {
   }
 
   const { user } = stored;
+  if (!user.tenant) {
+    return res.status(401).json({ message: 'Organisation not found. Please log in again.' });
+  }
   if (!user.isActive || !user.tenant.isActive) return res.status(403).json({ message: 'Account suspended' });
 
   // Rotate refresh token
