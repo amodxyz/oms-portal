@@ -35,6 +35,9 @@ import logger from './utils/logger';
 import prisma from './utils/prisma';
 
 const app = express();
+// Trust Vercel's reverse proxy for correct IP tracking (fixes express-rate-limit 500 error)
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT || 5000;
 
 // ── Security headers ───────────────────────────────────
