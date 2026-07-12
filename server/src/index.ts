@@ -36,7 +36,7 @@ import prisma from './utils/prisma';
 
 const app = express();
 // Trust Vercel's reverse proxy for correct IP tracking (fixes express-rate-limit 500 error)
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 const PORT = process.env.PORT || 5000;
 
@@ -81,6 +81,7 @@ const authLimiter = rateLimit({
   message: { message: 'Too many attempts, please try again after 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false }
 });
 
 const apiLimiter = rateLimit({
