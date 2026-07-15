@@ -115,120 +115,70 @@ export function BillingOverview() {
 export function Plans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<Plan | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', price: 0, billingCycle: 'MONTHLY', features: [''] });
+  const [subscribePlanId, setSubscribePlanId] = useState<string | null>(null);
 
   const fetch = () => api.get('/billing/plans').then(r => setPlans(r.data)).finally(() => setLoading(false));
   useEffect(() => { fetch(); }, []);
 
-  const openNew = () => { setEditing(null); setForm({ name: '', description: '', price: 0, billingCycle: 'MONTHLY', features: [''] }); setShowModal(true); };
-  const openEdit = (p: Plan) => { setEditing(p); setForm({ name: p.name, description: p.description || '', price: p.price, billingCycle: p.billingCycle, features: p.features }); setShowModal(true); };
-
-  const addFeature = () => setForm(f => ({ ...f, features: [...f.features, ''] }));
-  const removeFeature = (i: number) => setForm(f => ({ ...f, features: f.features.filter((_, idx) => idx !== i) }));
-  const updateFeature = (i: number, v: string) => setForm(f => ({ ...f, features: f.features.map((feat, idx) => idx === i ? v : feat) }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = { ...form, features: form.features.filter(Boolean) };
-    if (editing) await api.put(`/billing/plans/${editing.id}`, payload);
-    else await api.post('/billing/plans', payload);
-    setShowModal(false); fetch();
-  };
-
-  const handleDelete = async () => {
-    if (!deleteId) return;
-    await api.delete(`/billing/plans/${deleteId}`);
-    setDeleteId(null); fetch();
+  const handleSubscribe = async () => {
+    if (!subscribePlanId) return;
+    try {
+      await api.post('/billing/subscriptions', { planId: subscribePlanId, autoRenew: true });
+      window.location.href = '/billing/subscriptions';
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const cycleLabel = (c: string) => c === 'YEARLY' ? '/yr' : '/mo';
+  const activePlans = plans.filter(p => p.isActive);
 
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Plans</h1>
-        <button className="btn-primary" onClick={openNew}>➕ SaaS Plan</button>
+        <h1 className="page-title">Available SaaS Plans</h1>
       </div>
 
       {loading ? <Spinner /> : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map(plan => (
-            <div key={plan.id} className={`card border-2 flex flex-col ${!plan.isActive ? 'opacity-50' : 'border-blue-100'}`}>
+          {activePlans.map(plan => (
+            <div key={plan.id} className="card border-2 border-blue-100 flex flex-col hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="text-lg font-bold">{plan.name}</h3>
-                  {plan.description && <p className="text-sm text-gray-500 mt-0.5">{plan.description}</p>}
+                  <h3 className="text-xl font-bold">{plan.name}</h3>
+                  {plan.description && <p className="text-sm text-gray-500 mt-1">{plan.description}</p>}
                 </div>
-                {!plan.isActive && <span className="badge badge-gray">Inactive</span>}
               </div>
 
               <div className="my-4">
-                <span className="text-3xl font-bold text-blue-600">{formatCurrency(plan.price)}</span>
-                <span className="text-gray-400 text-sm">{cycleLabel(plan.billingCycle)}</span>
-                <span className="ml-2 badge badge-blue">{plan.billingCycle}</span>
+                <span className="text-4xl font-bold text-blue-600">{formatCurrency(plan.price)}</span>
+                <span className="text-gray-400 font-medium">{cycleLabel(plan.billingCycle)}</span>
               </div>
 
-              <ul className="space-y-2 flex-1 mb-4">
+              <ul className="space-y-3 flex-1 mb-6 mt-4">
                 {plan.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                    <span className="text-green-500 font-bold">✓</span>{f}
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                    <span className="text-green-500 font-bold">✓</span><span>{f}</span>
                   </li>
                 ))}
               </ul>
 
-              <div className="flex items-center justify-between pt-4 border-t">
-                <span className="text-xs text-gray-400">{plan._count?.subscriptions || 0} subscriptions</span>
-                <div className="flex gap-2">
-                  <button onClick={() => openEdit(plan)} className="text-blue-600 hover:underline text-xs">Edit</button>
-                  <button onClick={() => setDeleteId(plan.id)} className="text-red-600 hover:underline text-xs">Deactivate</button>
-                </div>
-              </div>
+              <button className="btn-primary w-full py-3 text-sm font-semibold" onClick={() => setSubscribePlanId(plan.id)}>
+                Subscribe / Buy
+              </button>
             </div>
           ))}
-          {plans.length === 0 && <div className="col-span-3"><EmptyState message="No plans created yet" /></div>}
+          {activePlans.length === 0 && <div className="col-span-3"><EmptyState message="No SaaS plans available at the moment." /></div>}
         </div>
       )}
 
-      {showModal && (
-        <Modal title={editing ? 'Edit Plan' : 'SaaS Plan'} onClose={() => setShowModal(false)}>
-          <form onSubmit={handleSubmit}>
-            <div className="modal-body space-y-4">
-              <FormField label="Plan Name" required><input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required /></FormField>
-              <FormField label="Description"><input className="input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} /></FormField>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Price" required><input className="input" type="number" step="0.01" value={form.price} onChange={e => setForm(f => ({ ...f, price: parseFloat(e.target.value) }))} required /></FormField>
-                <FormField label="Billing Cycle">
-                  <select className="input" value={form.billingCycle} onChange={e => setForm(f => ({ ...f, billingCycle: e.target.value }))}>
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="YEARLY">Yearly</option>
-                    <option value="ONE_TIME">One Time</option>
-                  </select>
-                </FormField>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="label mb-0">Features</label>
-                  <button type="button" className="btn-outline text-xs py-1" onClick={addFeature}>+ Add</button>
-                </div>
-                {form.features.map((feat, i) => (
-                  <div key={i} className="flex gap-2 mb-2">
-                    <input className="input flex-1" placeholder="e.g. Up to 10 users" value={feat} onChange={e => updateFeature(i, e.target.value)} />
-                    {form.features.length > 1 && <button type="button" onClick={() => removeFeature(i)} className="text-red-500 px-2">×</button>}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="submit" className="btn-primary">Save Plan</button>
-            </div>
-          </form>
-        </Modal>
+      {subscribePlanId && (
+        <ConfirmDialog
+          message={`Are you sure you want to subscribe to ${plans.find(p => p.id === subscribePlanId)?.name}? An invoice will be generated for payment.`}
+          onConfirm={handleSubscribe}
+          onCancel={() => setSubscribePlanId(null)}
+        />
       )}
-      {deleteId && <ConfirmDialog message="Deactivate this plan?" onConfirm={handleDelete} onCancel={() => setDeleteId(null)} />}
     </div>
   );
 }
@@ -236,26 +186,17 @@ export function Plans() {
 // ── Subscriptions ──────────────────────────────────────
 export function Subscriptions() {
   const [subs, setSubs] = useState<Subscription[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [cancelId, setCancelId] = useState<string | null>(null);
-  const [form, setForm] = useState({ planId: '', autoRenew: true });
 
   const fetch = useCallback(async () => {
     setLoading(true);
-    const [subsRes, plansRes] = await Promise.all([api.get('/billing/subscriptions'), api.get('/billing/plans')]);
-    setSubs(subsRes.data); setPlans(plansRes.data);
+    const { data } = await api.get('/billing/subscriptions');
+    setSubs(data);
     setLoading(false);
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await api.post('/billing/subscriptions', form);
-    setShowModal(false); fetch();
-  };
 
   const handleCancel = async () => {
     if (!cancelId) return;
@@ -268,20 +209,19 @@ export function Subscriptions() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Subscriptions</h1>
-        <button className="btn-primary" onClick={() => setShowModal(true)}>➕ New Subscription</button>
+        <h1 className="page-title">My Subscriptions</h1>
       </div>
 
       <div className="card">
-        {loading ? <Spinner /> : subs.length === 0 ? <EmptyState message="No subscriptions yet" /> : (
+        {loading ? <Spinner /> : subs.length === 0 ? <EmptyState message="You have no active subscriptions" /> : (
           <div className="table-container">
             <table>
               <thead><tr><th>Plan</th><th>Price</th><th>Cycle</th><th>Start Date</th><th>End Date</th><th>Auto Renew</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
                 {subs.map(sub => (
                   <tr key={sub.id}>
-                    <td className="font-medium">{sub.plan.name}</td>
-                    <td>{formatCurrency(sub.plan.price)}</td>
+                    <td className="font-medium text-blue-700">{sub.plan.name}</td>
+                    <td className="font-semibold">{formatCurrency(sub.plan.price)}</td>
                     <td><span className="badge badge-blue">{sub.plan.billingCycle}</span></td>
                     <td>{formatDate(sub.startDate)}</td>
                     <td>{sub.endDate ? formatDate(sub.endDate) : '—'}</td>
@@ -293,7 +233,7 @@ export function Subscriptions() {
                     <td><span className={`badge ${statusColor(sub.status)}`}>{sub.status}</span></td>
                     <td>
                       {sub.status === 'ACTIVE' && (
-                        <button onClick={() => setCancelId(sub.id)} className="text-red-600 hover:underline text-xs">Cancel</button>
+                        <button onClick={() => setCancelId(sub.id)} className="text-red-600 hover:underline text-xs font-medium">Cancel Plan</button>
                       )}
                     </td>
                   </tr>
@@ -304,42 +244,6 @@ export function Subscriptions() {
         )}
       </div>
 
-      {showModal && (
-        <Modal title="New Subscription" onClose={() => setShowModal(false)}>
-          <form onSubmit={handleCreate}>
-            <div className="modal-body space-y-4">
-              <FormField label="Select Plan" required>
-                <select className="input" value={form.planId} onChange={e => setForm(f => ({ ...f, planId: e.target.value }))} required>
-                  <option value="">Choose a plan</option>
-                  {plans.filter(p => p.isActive).map(p => (
-                    <option key={p.id} value={p.id}>{p.name} — {formatCurrency(p.price)}/{p.billingCycle === 'YEARLY' ? 'yr' : 'mo'}</option>
-                  ))}
-                </select>
-              </FormField>
-              {form.planId && (
-                <div className="p-4 bg-blue-50 rounded-xl text-sm">
-                  {(() => {
-                    const p = plans.find(pl => pl.id === form.planId);
-                    return p ? (
-                      <ul className="space-y-1">
-                        {p.features.map((f, i) => <li key={i} className="flex items-center gap-2 text-gray-600"><span className="text-green-500">✓</span>{f}</li>)}
-                      </ul>
-                    ) : null;
-                  })()}
-                </div>
-              )}
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.autoRenew} onChange={e => setForm(f => ({ ...f, autoRenew: e.target.checked }))} className="w-4 h-4 rounded" />
-                <span className="text-sm font-medium text-gray-700">Auto-renew subscription</span>
-              </label>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="submit" className="btn-primary">Subscribe</button>
-            </div>
-          </form>
-        </Modal>
-      )}
       {cancelId && <ConfirmDialog message="Cancel this subscription? This cannot be undone." onConfirm={handleCancel} onCancel={() => setCancelId(null)} />}
     </div>
   );

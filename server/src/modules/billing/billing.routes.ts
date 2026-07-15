@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../../middleware/auth.middleware';
 import {
-  getPlans, createPlan, updatePlan, deletePlan,
+  getPlans,
   getSubscriptions, getSubscription, createSubscription, updateSubscription, cancelSubscription,
   getBillingRecords, payBillingRecord, getBillingSummary,
 } from './billing.controller';
@@ -12,9 +12,6 @@ router.use(authenticate);
 router.get('/summary', getBillingSummary);
 
 router.get('/plans', getPlans);
-router.post('/plans', authorize('ADMIN'), createPlan);
-router.put('/plans/:id', authorize('ADMIN'), updatePlan);
-router.delete('/plans/:id', authorize('ADMIN'), deletePlan);
 
 router.get('/subscriptions', getSubscriptions);
 router.post('/subscriptions', authorize('ADMIN', 'MANAGER'), createSubscription);
