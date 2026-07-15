@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from './employees.controller';
-import { authenticate } from '../../middleware/auth';
-import { authorize } from '../../middleware/rbac';
+import { authenticate, authorize } from '../../middleware/auth.middleware';
 
 const router = Router();
 
 // Only ADMIN should be able to manage employees
-router.use(authenticate, authorize(['ADMIN']));
+router.use(authenticate as any, authorize('ADMIN') as any);
 
 router.get('/', getEmployees);
 router.post('/', createEmployee);
