@@ -74,6 +74,11 @@ export function NewProductionOrder() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({ productName: '', quantity: 1, unit: 'pcs', startDate: '', endDate: '', priority: 'NORMAL', assignedTo: '', notes: '' });
   const [resources, setResources] = useState([{ resourceName: '', resourceType: 'MACHINE', quantity: 1, unit: 'hrs' }]);
+  const [employees, setEmployees] = useState<{id: string, name: string}[]>([]);
+
+  useEffect(() => {
+    api.get('/employees').then(res => setEmployees(res.data)).catch(console.error);
+  }, []);
 
   const set = (k: string, v: unknown) => setForm(f => ({ ...f, [k]: v }));
   const addResource = () => setResources(r => [...r, { resourceName: '', resourceType: 'MACHINE', quantity: 1, unit: 'hrs' }]);
@@ -116,7 +121,14 @@ export function NewProductionOrder() {
                 </FormField>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <FormField label="Assigned To"><input className="input" value={form.assignedTo} onChange={e => set('assignedTo', e.target.value)} /></FormField>
+                <FormField label="Assigned To">
+                  <select className="input" value={form.assignedTo} onChange={e => set('assignedTo', e.target.value)}>
+                    <option value="">Unassigned</option>
+                    {employees.map(emp => (
+                      <option key={emp.id} value={emp.name}>{emp.name}</option>
+                    ))}
+                  </select>
+                </FormField>
                 <FormField label="Notes"><input className="input" value={form.notes} onChange={e => set('notes', e.target.value)} /></FormField>
               </div>
             </div>

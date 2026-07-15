@@ -70,6 +70,13 @@ const navItems: NavItem[] = [
   { label: 'Verifications', path: '/verifications', icon: '🔐' },
   { label: 'Integrations', path: '/integrations', icon: '🔗' },
   {
+    label: 'Employee Management', icon: '👥',
+    children: [
+      { label: 'All Employees', path: '/employees', icon: '📋' },
+      { label: 'Add Employee', path: '/employees/new', icon: '➕' },
+    ],
+  },
+  {
     label: 'Billing & Plan', icon: '💳',
     children: [
       { label: 'Overview', path: '/billing', icon: '📊' },

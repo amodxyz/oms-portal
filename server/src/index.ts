@@ -30,6 +30,7 @@ import reportRoutes from './modules/reports/reports.routes';
 import billingRoutes from './modules/billing/billing.routes';
 import superAdminRoutes from './modules/superadmin/superadmin.routes';
 import chatbotRoutes from './modules/chatbot/chatbot.routes';
+import employeeRoutes from './modules/employees/employees.routes';
 import { errorHandler, notFound } from './middleware/error.middleware';
 import logger from './utils/logger';
 import prisma from './utils/prisma';
@@ -118,6 +119,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/superadmin', superAdminRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // ── Health check (with DB ping) ────────────────────────
 app.get('/api/health', async (_req, res) => {

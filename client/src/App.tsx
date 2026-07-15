@@ -51,6 +51,10 @@ import { TransportersList, DispatchesList, TrackingPage } from './modules/logist
 import { InventoryReport, DayBook } from './modules/reports/Reports';
 import { BillingOverview, Plans, Subscriptions, BillingRecords } from './modules/billing/Billing';
 
+// Employees
+import EmployeesList from './modules/employees/EmployeesList';
+import EmployeeForm from './modules/employees/EmployeeForm';
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
@@ -121,6 +125,11 @@ function AppRoutes() {
 
       <Route path="/verifications" element={<ProtectedRoute><Verifications /></ProtectedRoute>} />
       <Route path="/integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
+      
+      <Route path="/employees" element={<ProtectedRoute><EmployeesList /></ProtectedRoute>} />
+      <Route path="/employees/new" element={<ProtectedRoute><EmployeeForm /></ProtectedRoute>} />
+      <Route path="/employees/:id/edit" element={<ProtectedRoute><EmployeeForm /></ProtectedRoute>} />
+      
       <Route path="/billing" element={<ProtectedRoute><BillingOverview /></ProtectedRoute>} />
       <Route path="/billing/plans" element={<ProtectedRoute><Plans /></ProtectedRoute>} />
       <Route path="/billing/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
