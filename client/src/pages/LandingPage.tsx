@@ -14,9 +14,10 @@ const features = [
 ];
 
 const plans = [
-  { name: 'Starter', price: '₹29', period: '/mo', color: 'border-gray-200', badge: '', features: ['5 Users', '1,000 Orders/mo', 'Basic Reports', 'Email Support'] },
-  { name: 'Professional', price: '₹79', period: '/mo', color: 'border-blue-500', badge: 'Most Popular', features: ['25 Users', '10,000 Orders/mo', 'Advanced Analytics', 'GST Reports', 'Priority Support'] },
-  { name: 'Enterprise', price: '₹199', period: '/mo', color: 'border-purple-500', badge: 'Best Value', features: ['Unlimited Users', 'Unlimited Orders', 'Custom Reports', 'API Access', 'Dedicated Support'] },
+  { name: 'Starter', price: '₹499', period: '/mo', color: 'border-gray-200', badge: '', features: ['3 Users', 'Order Management', 'Basic Reports', 'Email Support'] },
+  { name: 'Standard', price: '₹999', period: '/mo', color: 'border-blue-500', badge: 'Most Popular', features: ['10 Users', 'GST Billing', 'Advanced Reports', 'Priority Support'] },
+  { name: 'Professional', price: '₹2,499', period: '/mo', color: 'border-purple-200', badge: '', features: ['25 Users', 'Multi-Warehouse', 'Approval Workflow', 'Phone Support'] },
+  { name: 'Enterprise', price: 'Custom', period: '', color: 'border-orange-200', badge: '', features: ['Unlimited Users', 'Custom Integrations', 'AI Automation', 'Account Manager'] },
 ];
 
 const stats = [
@@ -178,14 +179,14 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="pricing" className="py-20 px-6 bg-white">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Affordable OMS Pricing for Indian SMEs</h2>
             <p className="text-gray-500">All plans include GST compliance, inventory management, and 24/7 support. No hidden fees.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {plans.map(p => (
-              <div key={p.name} className={`relative rounded-2xl border-2 ${p.color} p-8 flex flex-col ${p.badge === 'Most Popular' ? 'shadow-xl scale-105' : ''}`}>
+              <div key={p.name} className={`relative rounded-2xl border-2 ${p.color} p-8 flex flex-col ${p.badge === 'Most Popular' ? 'shadow-xl scale-105 z-10 bg-white' : 'bg-white'}`}>
                 {p.badge && (
                   <span className={`absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full ${p.badge === 'Most Popular' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'}`}>
                     {p.badge}
@@ -199,12 +200,12 @@ export default function LandingPage() {
                 <ul className="space-y-3 flex-1 mb-8">
                   {p.features.map(f => (
                     <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                      <span className="text-green-500">✓</span> {f}
+                      <span className="text-green-500 font-bold">✓</span> {f}
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => navigate('/register')} className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${p.badge === 'Most Popular' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300 hover:text-blue-600'}`}>
-                  Get Started
+                <button onClick={() => navigate('/pricing')} className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${p.badge === 'Most Popular' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300 hover:text-blue-600'}`}>
+                  See Full Plan Details
                 </button>
               </div>
             ))}
