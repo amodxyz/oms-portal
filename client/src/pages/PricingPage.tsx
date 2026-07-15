@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LandingChatbot from '../components/LandingChatbot';
 
@@ -26,7 +26,6 @@ const Navbar = () => {
 };
 
 const Footer = () => {
-  const navigate = useNavigate();
   return (
     <footer className="bg-gray-900 text-gray-400 py-10 px-6">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -48,78 +47,70 @@ const Footer = () => {
 const plans = [
   {
     name: 'Starter',
-    monthlyPrice: 29,
-    yearlyPrice: 23,
-    color: 'border-gray-200',
+    monthlyPrice: 499,
+    yearlyPrice: 4999,
+    color: 'border-green-200',
+    headerColor: 'bg-green-50',
+    textColor: 'text-green-700',
     badge: '',
-    desc: 'Perfect for small businesses just getting started.',
+    desc: 'Suitable For: Small Businesses',
     features: [
-      { text: '5 Users', included: true },
-      { text: '1,000 Orders/month', included: true },
-      { text: 'Inventory Management', included: true },
-      { text: 'Basic GST Invoices', included: true },
-      { text: 'Customer Management', included: true },
-      { text: 'Basic Reports', included: true },
-      { text: 'Email Support', included: true },
-      { text: 'Advanced Analytics', included: false },
-      { text: 'Production Module', included: false },
-      { text: 'API Access', included: false },
-      { text: 'Dedicated Support', included: false },
+      'Up to 3 Users', 'Order Management', 'Customer Management', 'Product Management', 'Invoice Generation', 'Basic Reports', 'Email Support', '2 GB Cloud Storage'
     ],
+    ctaText: 'Start Free Trial',
+  },
+  {
+    name: 'Standard',
+    monthlyPrice: 999,
+    yearlyPrice: 9999,
+    color: 'border-blue-500',
+    headerColor: 'bg-blue-600',
+    textColor: 'text-white',
+    badge: 'Most Popular',
+    desc: 'Suitable For: Growing Wholesalers & Distributors',
+    features: [
+      'Everything in Starter', 'Up to 10 Users', 'Inventory Management', 'Purchase & Sales Orders', 'GST Billing', 'WhatsApp Notifications', 'Advanced Reports', 'Role-Based Access', '10 GB Cloud Storage', 'Priority Support'
+    ],
+    ctaText: 'Get Started',
   },
   {
     name: 'Professional',
-    monthlyPrice: 79,
-    yearlyPrice: 63,
-    color: 'border-blue-500',
-    badge: 'Most Popular',
-    desc: 'For growing businesses that need more power.',
+    monthlyPrice: 2499,
+    yearlyPrice: 24999,
+    color: 'border-purple-200',
+    headerColor: 'bg-purple-50',
+    textColor: 'text-purple-700',
+    badge: '',
+    desc: 'Suitable For: Large Retailers & Service Businesses',
     features: [
-      { text: '25 Users', included: true },
-      { text: '10,000 Orders/month', included: true },
-      { text: 'Inventory Management', included: true },
-      { text: 'Full GST Compliance', included: true },
-      { text: 'Customer Management', included: true },
-      { text: 'Advanced Reports & Analytics', included: true },
-      { text: 'Priority Email Support', included: true },
-      { text: 'Production Module', included: true },
-      { text: 'Quality Control', included: true },
-      { text: 'API Access', included: false },
-      { text: 'Dedicated Support', included: false },
+      'Everything in Standard', 'Up to 25 Users', 'Multi-Warehouse', 'Vendor Management', 'Barcode Support', 'Approval Workflow', 'Dashboard Analytics', 'API Access', 'Custom Reports', '50 GB Storage', 'Phone & WhatsApp Support'
     ],
+    ctaText: 'Choose Professional',
   },
   {
     name: 'Enterprise',
-    monthlyPrice: 199,
-    yearlyPrice: 159,
-    color: 'border-purple-500',
-    badge: 'Best Value',
-    desc: 'For large operations with no limits.',
+    monthlyPrice: 'Contact Sales',
+    yearlyPrice: 'Contact Sales',
+    color: 'border-orange-200',
+    headerColor: 'bg-orange-50',
+    textColor: 'text-orange-700',
+    badge: '',
+    desc: 'Suitable For: Large Enterprises & Custom Needs',
     features: [
-      { text: 'Unlimited Users', included: true },
-      { text: 'Unlimited Orders', included: true },
-      { text: 'Inventory Management', included: true },
-      { text: 'Full GST Compliance', included: true },
-      { text: 'Customer Management', included: true },
-      { text: 'Custom Reports', included: true },
-      { text: 'Dedicated Support', included: true },
-      { text: 'Production Module', included: true },
-      { text: 'Quality Control', included: true },
-      { text: 'API Access', included: true },
-      { text: 'White-label Option', included: true },
+      'Unlimited Users', 'Multi-Company', 'Multi-Branch', 'White Label', 'Custom Integrations', 'Dedicated Server', 'Mobile App', 'AI Automation', 'Dedicated Account Manager', 'SLA Support', 'Training & Onboarding'
     ],
+    ctaText: 'Contact Sales',
   },
 ];
 
 const faqs = [
-  { q: 'Is there a free trial?', a: 'Yes — you can register and use OMS Portal free for 14 days. No credit card required. All features including GST invoicing and inventory management are available during the trial.' },
-  { q: 'Is Digital AdWords OMS GST-compliant?', a: 'Yes. The OMS auto-generates GST-compliant invoices with CGST, SGST, and IGST calculations. It includes a Day Book with GST liability reports, making GST return filing easy for Indian SMEs.' },
-  { q: 'Can I change my plan later?', a: 'Absolutely. You can upgrade or downgrade your plan at any time from the billing section without any data loss.' },
-  { q: 'Is GST included in the pricing shown?', a: 'The prices shown are exclusive of GST. 18% GST will be added at checkout as per Indian tax laws. You will receive a GST invoice for your subscription.' },
-  { q: 'What payment methods do you accept?', a: 'We accept UPI, Net Banking, Credit/Debit cards, and Razorpay — all major Indian payment methods are supported.' },
-  { q: 'Is my business data secure?', a: 'Yes. All data is encrypted at rest and in transit, stored on secure PostgreSQL servers, and fully isolated per organisation with role-based access control.' },
-  { q: 'Can I manage inventory across multiple locations?', a: 'Yes. The inventory module supports multi-location stock tracking with low-stock alerts, stock transfers between branches, and real-time stock summaries.' },
-  { q: 'Is this OMS suitable for small businesses and startups in India?', a: 'Yes. The Starter plan at ₹29/month is designed for small businesses and startups. It includes GST invoicing, order management, inventory tracking, and customer management for up to 5 users.' },
+  { q: 'Can I cancel anytime?', a: 'Yes, you can cancel your subscription at any time. There are no long-term lock-in contracts.' },
+  { q: 'Is GST included in the pricing shown?', a: 'No, the prices shown are exclusive of 18% GST. A valid GST invoice will be provided for your business.' },
+  { q: 'Can I upgrade later?', a: 'Absolutely! You can upgrade from Starter to Standard or Professional as your business grows without any data loss.' },
+  { q: 'Is training included?', a: 'We provide free onboarding and setup assistance. The Enterprise plan includes dedicated training sessions for your entire team.' },
+  { q: 'Do you provide customer support?', a: 'Yes, all plans include support. Starter includes Email support, Standard gets Priority Support, Professional gets Phone & WhatsApp support, and Enterprise gets a Dedicated Account Manager.' },
+  { q: 'Can I migrate data from Excel?', a: 'Yes, we provide free data migration services and Excel upload options for products, customers, and inventory.' },
+  { q: 'Do you offer custom pricing?', a: 'Yes, our Enterprise plan is completely customizable based on your unique business needs and integrations.' },
 ];
 
 export default function PricingPage() {
@@ -127,93 +118,240 @@ export default function PricingPage() {
   const [yearly, setYearly] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  // SEO Optimization
+  useEffect(() => {
+    document.title = 'Affordable Order Management Software Pricing in India | Digital AdWords OMS';
+    
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', 'Choose the best Order Management Software plan for your business. Affordable pricing starting at ₹499/month with GST billing, inventory management, reporting, and a 15-day free trial.');
+
+    const scriptId = 'pricing-schema';
+    let schemaScript = document.getElementById(scriptId);
+    if (!schemaScript) {
+      schemaScript = document.createElement('script');
+      schemaScript.id = scriptId;
+      schemaScript.setAttribute('type', 'application/ld+json');
+      document.head.appendChild(schemaScript);
+    }
+    schemaScript.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Product",
+          "name": "Digital AdWords OMS",
+          "description": "Order Management Software for Indian SMEs",
+          "offers": {
+            "@type": "AggregateOffer",
+            "lowPrice": "499",
+            "priceCurrency": "INR",
+            "offerCount": "3"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": faqs.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]
+    });
+
+    return () => {
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans text-gray-900">
       <Navbar />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-6 bg-gradient-to-br from-blue-50 via-white to-purple-50 text-center">
-        <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-          Simple Pricing
-        </span>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-          Affordable OMS Pricing for Indian Small Businesses
+      {/* Hero & Toggle */}
+      <section className="pt-32 pb-12 px-6 bg-gradient-to-b from-blue-50 to-white text-center">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+          Simple, Transparent Pricing
         </h1>
-        <p className="text-lg text-gray-500 max-w-xl mx-auto mb-8">
-          All plans include GST compliance, inventory management, and full support. Plans starting from ₹29/month — pay monthly or save 20% annually.
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+          Redesigned to empower Indian SMEs, manufacturers, wholesalers, and retailers. 
+          Choose the plan that fits your business scale.
         </p>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <span className={`text-sm font-medium ${!yearly ? 'text-gray-900' : 'text-gray-400'}`}>Monthly</span>
-          <button
-            onClick={() => setYearly(y => !y)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${yearly ? 'bg-blue-600' : 'bg-gray-300'}`}
-          >
-            <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${yearly ? 'translate-x-7' : 'translate-x-1'}`} />
-          </button>
-          <span className={`text-sm font-medium ${yearly ? 'text-gray-900' : 'text-gray-400'}`}>Yearly</span>
-          {yearly && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Save 20%</span>}
+        <div className="flex flex-col items-center justify-center gap-3 mb-2">
+          <div className="flex items-center gap-3">
+            <span className={`text-base font-semibold ${!yearly ? 'text-gray-900' : 'text-gray-400'}`}>Monthly</span>
+            <button
+              onClick={() => setYearly(y => !y)}
+              className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${yearly ? 'bg-blue-600' : 'bg-gray-300'}`}
+              aria-label="Toggle Billing Cycle"
+            >
+              <span className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${yearly ? 'translate-x-8' : 'translate-x-1'}`} />
+            </button>
+            <span className={`text-base font-semibold ${yearly ? 'text-gray-900' : 'text-gray-400'}`}>Yearly</span>
+          </div>
+          {yearly && <span className="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold shadow-sm animate-pulse">Save 17% (2 Months Free)</span>}
         </div>
       </section>
 
-      {/* Plans */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Pricing Cards */}
+      <section className="py-10 px-4 md:px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-center">
           {plans.map(p => (
-            <div key={p.name} className={`relative rounded-2xl border-2 ${p.color} p-8 flex flex-col ${p.badge === 'Most Popular' ? 'shadow-xl scale-105' : ''}`}>
+            <div key={p.name} className={`relative bg-white rounded-2xl border-2 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl flex flex-col h-full ${p.color} ${p.badge === 'Most Popular' ? 'shadow-lg scale-100 xl:scale-105 z-10' : ''}`}>
               {p.badge && (
-                <span className={`absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full ${p.badge === 'Most Popular' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'}`}>
-                  {p.badge}
-                </span>
+                <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                  <span className="bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                    {p.badge}
+                  </span>
+                </div>
               )}
-              <div className="text-lg font-bold text-gray-900 mb-1">{p.name}</div>
-              <p className="text-sm text-gray-500 mb-4">{p.desc}</p>
-              <div className="flex items-end gap-1 mb-2">
-                <span className="text-4xl font-extrabold text-gray-900">₹{yearly ? p.yearlyPrice : p.monthlyPrice}</span>
-                <span className="text-gray-400 mb-1">/mo</span>
+              
+              <div className={`p-6 rounded-t-xl ${p.headerColor}`}>
+                <h3 className={`text-2xl font-bold ${p.textColor}`}>{p.name}</h3>
+                <p className="text-sm mt-2 font-medium opacity-90">{p.desc}</p>
+                <div className="mt-4 flex items-baseline gap-1">
+                  {typeof p.monthlyPrice === 'number' ? (
+                    <>
+                      <span className="text-4xl font-extrabold text-gray-900">₹{yearly ? p.yearlyPrice : p.monthlyPrice}</span>
+                      <span className="text-gray-600 font-medium">/{yearly ? 'yr' : 'mo'}</span>
+                    </>
+                  ) : (
+                    <span className="text-3xl font-extrabold text-gray-900">{p.monthlyPrice}</span>
+                  )}
+                </div>
               </div>
-              {yearly && <p className="text-xs text-green-600 font-medium mb-4">Billed ₹{p.yearlyPrice * 12}/year</p>}
-              <ul className="space-y-2 flex-1 mb-8 mt-4">
-                {p.features.map(f => (
-                  <li key={f.text} className="flex items-center gap-2 text-sm">
-                    {f.included
-                      ? <span className="text-green-500 font-bold">✓</span>
-                      : <span className="text-gray-300 font-bold">✗</span>}
-                    <span className={f.included ? 'text-gray-700' : 'text-gray-400'}>{f.text}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => navigate('/register')}
-                className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${p.badge === 'Most Popular' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300 hover:text-blue-600'}`}
-              >
-                Get Started
-              </button>
+
+              <div className="p-6 flex-1 flex flex-col">
+                <ul className="space-y-3 flex-1 mb-8">
+                  {p.features.map(f => (
+                    <li key={f} className="flex items-start gap-3 text-sm text-gray-700 font-medium">
+                      <span className="text-blue-500 font-bold text-lg leading-none">✓</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => navigate('/register')}
+                  className={`w-full py-3.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                    p.badge === 'Most Popular' 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md' 
+                      : 'bg-white text-blue-700 border-2 border-blue-100 hover:border-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  {p.ctaText}
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* All plans include */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-10">Everything Included — GST, Inventory & More</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Free Trial Banner */}
+      <section className="py-12 px-6">
+        <div className="max-w-5xl mx-auto bg-gradient-to-r from-blue-900 to-blue-700 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">15-Day Free Trial</h2>
+          <div className="flex flex-wrap justify-center gap-4 mb-8 text-blue-100 font-medium">
+            <span className="flex items-center gap-2">✅ No Credit Card Required</span>
+            <span className="flex items-center gap-2">✅ Full Feature Access</span>
+            <span className="flex items-center gap-2">✅ Free Setup Assistance</span>
+            <span className="flex items-center gap-2">✅ Free Data Migration</span>
+            <span className="flex items-center gap-2">✅ Cancel Anytime</span>
+          </div>
+          <button onClick={() => navigate('/register')} className="bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-lg hover:scale-105">
+            Start Free Trial
+          </button>
+        </div>
+      </section>
+
+      {/* Feature Comparison Table */}
+      <section className="py-16 px-6 bg-gray-50 border-y border-gray-100">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Compare Plans & Features</h2>
+          <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-200">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-gray-50 text-gray-900 border-b-2 border-gray-200">
+                  <th className="p-4 font-bold w-1/5">Feature</th>
+                  <th className="p-4 font-bold text-center text-green-700">Starter</th>
+                  <th className="p-4 font-bold text-center text-blue-700">Standard</th>
+                  <th className="p-4 font-bold text-center text-purple-700">Professional</th>
+                  <th className="p-4 font-bold text-center text-orange-700">Enterprise</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {[
+                  { feature: 'Users', values: ['3', '10', '25', 'Unlimited'] },
+                  { feature: 'Order Management', values: ['✅', '✅', '✅', '✅'] },
+                  { feature: 'Inventory', values: ['❌', '✅', '✅', '✅'] },
+                  { feature: 'GST Billing', values: ['✅', '✅', '✅', '✅'] },
+                  { feature: 'Reports', values: ['Basic', 'Advanced', 'Custom', 'Enterprise'] },
+                  { feature: 'API Access', values: ['❌', '❌', '✅', '✅'] },
+                  { feature: 'Multi Branch', values: ['❌', '❌', '✅', '✅'] },
+                  { feature: 'AI Automation', values: ['❌', '❌', 'Optional', 'Included'] },
+                  { feature: 'Support', values: ['Email', 'Priority', 'Phone', 'Dedicated'] },
+                ].map((row, i) => (
+                  <tr key={row.feature} className={`border-b border-gray-100 hover:bg-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                    <td className="p-4 font-semibold text-gray-700">{row.feature}</td>
+                    {row.values.map((val, idx) => (
+                      <td key={idx} className="p-4 text-center font-medium text-gray-600">
+                        {val === '✅' ? <span className="text-green-500 text-lg font-bold">✓</span> : val === '❌' ? <span className="text-gray-300 text-lg font-bold">−</span> : val}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Add-On Pricing */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">Power-Ups & Add-Ons</h2>
+          <p className="text-center text-gray-600 mb-12">Customize your plan by adding exactly what you need.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: '🔒', title: 'Secure & Encrypted', desc: 'Data encrypted at rest and in transit' },
-              { icon: '☁️', title: 'Cloud Hosted', desc: 'No installation, access from anywhere' },
-              { icon: '🔄', title: 'Auto Backups', desc: 'Daily automated database backups' },
-              { icon: '📱', title: 'Mobile Friendly', desc: 'Works on all devices and browsers' },
-              { icon: '🇮🇳', title: 'GST Compliant', desc: 'CGST, SGST, IGST auto-calculation' },
-              { icon: '👥', title: 'Multi-user', desc: 'Role-based access for your team' },
-              { icon: '📧', title: 'Email Alerts', desc: 'Verification and password reset emails' },
-              { icon: '🤖', title: 'AI Assistant', desc: 'Built-in chatbot for quick help' },
-            ].map(f => (
-              <div key={f.title} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-left">
-                <div className="text-2xl mb-2">{f.icon}</div>
-                <div className="font-semibold text-gray-900 text-sm mb-1">{f.title}</div>
-                <div className="text-xs text-gray-500">{f.desc}</div>
+              { name: 'Extra User', price: '₹99/mo', icon: '👤' },
+              { name: 'Extra Branch', price: '₹499/mo', icon: '🏢' },
+              { name: 'WhatsApp API', price: '₹999/mo', icon: '💬' },
+              { name: 'Mobile App', price: '₹999/mo', icon: '📱' },
+              { name: 'AI Assistant', price: '₹999/mo', icon: '🤖' },
+              { name: 'API Access', price: '₹499/mo', icon: '🔌' },
+              { name: 'Extra Storage (50 GB)', price: '₹299/mo', icon: '💾' },
+            ].map(addon => (
+              <div key={addon.name} className="p-6 bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:shadow-md transition-all text-center flex flex-col items-center">
+                <span className="text-3xl mb-3">{addon.icon}</span>
+                <h4 className="font-bold text-gray-900 mb-1">{addon.name}</h4>
+                <p className="text-blue-600 font-bold">{addon.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section */}
+      <section className="py-12 px-6 bg-gray-900 text-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 text-center">
+            {[
+              { label: 'Secure Cloud Hosting', icon: '☁️' },
+              { label: 'SSL Secured', icon: '🔒' },
+              { label: '99.9% Uptime', icon: '⚡' },
+              { label: 'GST Ready', icon: '🇮🇳' },
+              { label: 'Made for India', icon: '🤝' },
+              { label: 'Free Onboarding', icon: '🎓' },
+              { label: 'Regular Updates', icon: '🔄' },
+            ].map(trust => (
+              <div key={trust.label} className="flex flex-col items-center">
+                <span className="text-2xl mb-2">{trust.icon}</span>
+                <span className="text-xs font-semibold text-gray-400">{trust.label}</span>
               </div>
             ))}
           </div>
@@ -221,21 +359,21 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">FAQs — GST Billing & Order Management Software</h2>
-          <div className="space-y-3">
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-10">Frequently Asked Questions</h2>
+          <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div key={i} className="border border-gray-200 rounded-xl overflow-hidden">
+              <div key={i} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between px-6 py-5 text-left font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   {faq.q}
-                  <span className={`text-gray-400 transition-transform ${openFaq === i ? 'rotate-180' : ''}`}>▼</span>
+                  <span className={`text-blue-500 font-bold transition-transform ${openFaq === i ? 'rotate-180' : ''}`}>▼</span>
                 </button>
                 {openFaq === i && (
-                  <div className="px-5 pb-4 text-sm text-gray-600 border-t border-gray-100 pt-3">{faq.a}</div>
+                  <div className="px-6 pb-5 text-gray-600 border-t border-gray-100 pt-4 leading-relaxed">{faq.a}</div>
                 )}
               </div>
             ))}
@@ -243,19 +381,28 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 px-6 bg-gradient-to-br from-blue-600 to-blue-800 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">See the OMS in Action — Book a Free Demo</h2>
-        <p className="text-blue-200 mb-8">Book a free demo and we'll walk you through GST invoicing, inventory management, and order tracking tailored for your Indian business.</p>
-        <div className="flex gap-4 justify-center">
-          <button onClick={() => navigate('/book-demo')} className="bg-white text-blue-700 px-8 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-lg">
-            Book a Demo →
-          </button>
-          <button onClick={() => navigate('/register')} className="bg-blue-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-400 transition-all border border-blue-400">
+      {/* Final CTA */}
+      <section className="py-24 px-6 bg-gradient-to-br from-blue-700 to-blue-900 text-center text-white">
+        <h2 className="text-4xl font-extrabold mb-6">Ready to Simplify Your Business Operations?</h2>
+        <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto">
+          Manage orders, inventory, billing, and customer relationships with one powerful cloud-based OMS.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button onClick={() => navigate('/register')} className="bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-xl">
             Start Free Trial
+          </button>
+          <button onClick={() => navigate('/book-demo')} className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all">
+            Book a Live Demo
           </button>
         </div>
       </section>
+
+      {/* Mobile Sticky CTA */}
+      <div className="md:hidden fixed bottom-0 w-full p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
+        <button onClick={() => navigate('/register')} className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg font-bold shadow-md hover:bg-blue-700">
+          Start Free Trial
+        </button>
+      </div>
 
       <LandingChatbot />
       <Footer />
