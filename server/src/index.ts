@@ -11,12 +11,10 @@ dotenv.config();
 
 // ── Startup safety checks ──────────────────────────────
 if (!process.env.JWT_SECRET) {
-  console.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
-  process.exit(1);
+  console.warn('WARNING: JWT_SECRET environment variable is not set. Auth may fail.');
 }
 if (!process.env.REFRESH_TOKEN_SECRET) {
-  console.error('FATAL: REFRESH_TOKEN_SECRET environment variable is not set. Refusing to start.');
-  process.exit(1);
+  console.warn('WARNING: REFRESH_TOKEN_SECRET environment variable is not set. Auth may fail.');
 }
 
 import authRoutes from './modules/auth/auth.routes';
@@ -46,24 +44,15 @@ app.use(helmet());
 app.use(cookieParser());
 
 // ── CORS ───────────────────────────────────────────────
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://oms.digitaladwords.in',
-  'https://oms-portal.digitaladwords.in',
-  'https://oms-portal-client.vercel.app',
-  ...(process.env.CLIENT_URL || '').split(',').map(o => o.trim())
-].filter(Boolean);
-
 app.use(cors({
-  origin: (origin, cb) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      // Return false instead of throwing to allow the middleware to handle it gracefully
-      cb(null, false);
-    }
-  },
+  origin: [
+    'http://localhost:3000',
+    'https://oms.digitaladwords.in',
+    'https://oms-portal.digitaladwords.in',
+    'https://oms-portal-client.vercel.app',
+    'https://oms-portal-client-git-main-oms-portal.vercel.app',
+    ...(process.env.CLIENT_URL || '').split(',').map(o => o.trim())
+  ].filter(Boolean),
   credentials: true,
 }));
 
