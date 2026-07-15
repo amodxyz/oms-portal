@@ -150,7 +150,7 @@ export function Plans() {
     <div>
       <div className="page-header">
         <h1 className="page-title">Plans</h1>
-        <button className="btn-primary" onClick={openNew}>➕ New Plan</button>
+        <button className="btn-primary" onClick={openNew}>➕ SaaS Plan</button>
       </div>
 
       {loading ? <Spinner /> : (
@@ -193,7 +193,7 @@ export function Plans() {
       )}
 
       {showModal && (
-        <Modal title={editing ? 'Edit Plan' : 'New Plan'} onClose={() => setShowModal(false)}>
+        <Modal title={editing ? 'Edit Plan' : 'SaaS Plan'} onClose={() => setShowModal(false)}>
           <form onSubmit={handleSubmit}>
             <div className="modal-body space-y-4">
               <FormField label="Plan Name" required><input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required /></FormField>
