@@ -6,13 +6,19 @@ const generateInvoiceNo = () => `BILL-${Date.now()}`;
 
 export const getPlans = async (_req: AuthRequest, res: Response) => {
   const plans = await prisma.plan.findMany({ include: { _count: { select: { subscriptions: true } } }, orderBy: { price: 'asc' } });
-  res.json(plans.map(p => ({ ...p, features: JSON.parse(p.features) })));
+  res.json(plans.map(p => {
+    let parsedFeatures = [];
+    try { parsedFeatures = p.features ? JSON.parse(p.features) : []; } catch (e) {}
+    return { ...p, features: parsedFeatures };
+  }));
 };
 
 export const createPlan = async (req: AuthRequest, res: Response) => {
   const { name, description, price, billingCycle, features } = req.body;
   const plan = await prisma.plan.create({ data: { name, description, price, billingCycle, features: JSON.stringify(features) } });
-  res.status(201).json({ ...plan, features: JSON.parse(plan.features) });
+  let parsedFeatures = [];
+  try { parsedFeatures = plan.features ? JSON.parse(plan.features) : []; } catch (e) {}
+  res.status(201).json({ ...plan, features: parsedFeatures });
 };
 
 export const updatePlan = async (req: AuthRequest, res: Response) => {
@@ -20,7 +26,9 @@ export const updatePlan = async (req: AuthRequest, res: Response) => {
   const data: Record<string, unknown> = { name, description, price, billingCycle, isActive };
   if (features) data.features = JSON.stringify(features);
   const plan = await prisma.plan.update({ where: { id: req.params.id }, data });
-  res.json({ ...plan, features: JSON.parse(plan.features) });
+  let parsedFeatures = [];
+  try { parsedFeatures = plan.features ? JSON.parse(plan.features) : []; } catch (e) {}
+  res.json({ ...plan, features: parsedFeatures });
 };
 
 export const deletePlan = async (req: AuthRequest, res: Response) => {
@@ -43,7 +51,9 @@ export const getSubscription = async (req: AuthRequest, res: Response) => {
     include: { plan: true, billingRecords: { orderBy: { createdAt: 'desc' } } },
   });
   if (!sub) return res.status(404).json({ message: 'Subscription not found' });
-  res.json({ ...sub, plan: { ...sub.plan, features: JSON.parse(sub.plan.features) } });
+  let parsedFeatures = [];
+  try { parsedFeatures = sub.plan.features ? JSON.parse(sub.plan.features) : []; } catch (e) {}
+  res.json({ ...sub, plan: { ...sub.plan, features: parsedFeatures } });
 };
 
 export const createSubscription = async (req: AuthRequest, res: Response) => {
