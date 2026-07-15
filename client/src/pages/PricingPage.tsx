@@ -47,8 +47,8 @@ const Footer = () => {
 const plans = [
   {
     name: 'Starter',
-    monthlyPrice: 499,
-    yearlyPrice: 4999,
+    monthlyPrice: 4999,
+    yearlyPrice: 49990,
     color: 'border-green-200',
     headerColor: 'bg-green-50',
     textColor: 'text-green-700',
@@ -61,8 +61,8 @@ const plans = [
   },
   {
     name: 'Standard',
-    monthlyPrice: 799,
-    yearlyPrice: 7999,
+    monthlyPrice: 7999,
+    yearlyPrice: 79990,
     color: 'border-blue-500',
     headerColor: 'bg-blue-600',
     textColor: 'text-white',
@@ -75,8 +75,8 @@ const plans = [
   },
   {
     name: 'Professional',
-    monthlyPrice: 999,
-    yearlyPrice: 9999,
+    monthlyPrice: 9999,
+    yearlyPrice: 99990,
     color: 'border-purple-200',
     headerColor: 'bg-purple-50',
     textColor: 'text-purple-700',

@@ -14,9 +14,9 @@ const features = [
 ];
 
 const plans = [
-  { name: 'Starter', price: '₹499', period: '/mo', color: 'border-gray-200', badge: '', features: ['3 Users', 'Order Management', 'Basic Reports', 'Email Support'] },
-  { name: 'Standard', price: '₹799', period: '/mo', color: 'border-blue-500', badge: 'Most Popular', features: ['10 Users', 'GST Billing', 'Advanced Reports', 'Priority Support'] },
-  { name: 'Professional', price: '₹999', period: '/mo', color: 'border-purple-200', badge: '', features: ['25 Users', 'Multi-Warehouse', 'Approval Workflow', 'Phone Support'] },
+  { name: 'Starter', price: '₹4,999', period: '/mo', color: 'border-gray-200', badge: '', features: ['3 Users', 'Order Management', 'Basic Reports', 'Email Support'] },
+  { name: 'Standard', price: '₹7,999', period: '/mo', color: 'border-blue-500', badge: 'Most Popular', features: ['10 Users', 'GST Billing', 'Advanced Reports', 'Priority Support'] },
+  { name: 'Professional', price: '₹9,999', period: '/mo', color: 'border-purple-200', badge: '', features: ['25 Users', 'Multi-Warehouse', 'Approval Workflow', 'Phone Support'] },
   { name: 'Enterprise', price: 'Custom', period: '', color: 'border-orange-200', badge: '', features: ['Unlimited Users', 'Custom Integrations', 'AI Automation', 'Account Manager'] },
 ];
 
