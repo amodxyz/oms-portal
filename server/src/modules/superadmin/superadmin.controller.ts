@@ -102,7 +102,7 @@ export const getPlans = async (_req: SuperAdminRequest, res: Response) => {
     orderBy: { sortOrder: 'asc' },
     include: { _count: { select: { subscriptions: true } } },
   });
-  res.json(plans);
+  res.json(plans.map(p => ({ ...p, features: JSON.parse(p.features) })));
 };
 
 export const createPlan = async (req: SuperAdminRequest, res: Response) => {
@@ -111,7 +111,7 @@ export const createPlan = async (req: SuperAdminRequest, res: Response) => {
     data: { name, description, price: Number(price), billingCycle, features: JSON.stringify(features), maxUsers: Number(maxUsers) || 5, maxOrders: Number(maxOrders) || 1000, isActive: isActive ?? true, isPopular: isPopular ?? false, sortOrder: Number(sortOrder) || 0 },
   });
   await audit(req.superAdmin!.email, 'CREATE_PLAN', 'Plan', plan.id, plan.name, req.ip);
-  res.status(201).json(plan);
+  res.status(201).json({ ...plan, features: JSON.parse(plan.features) });
 };
 
 export const updatePlan = async (req: SuperAdminRequest, res: Response) => {
@@ -124,7 +124,7 @@ export const updatePlan = async (req: SuperAdminRequest, res: Response) => {
   if (features !== undefined) data.features = JSON.stringify(features);
   const plan = await prisma.plan.update({ where: { id: req.params.id }, data });
   await audit(req.superAdmin!.email, 'UPDATE_PLAN', 'Plan', plan.id, plan.name, req.ip);
-  res.json(plan);
+  res.json({ ...plan, features: JSON.parse(plan.features) });
 };
 
 export const deletePlan = async (req: SuperAdminRequest, res: Response) => {
