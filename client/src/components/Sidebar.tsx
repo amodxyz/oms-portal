@@ -70,7 +70,7 @@ const navItems: NavItem[] = [
   { label: 'Verifications', path: '/verifications', icon: '🔐' },
   { label: 'Integrations', path: '/integrations', icon: '🔗' },
   {
-    label: 'Employee Management', icon: '👥',
+    label: 'Employees', icon: '👥',
     children: [
       { label: 'All Employees', path: '/employees', icon: '📋' },
       { label: 'Add Employee', path: '/employees/new', icon: '➕' },
@@ -88,7 +88,7 @@ const navItems: NavItem[] = [
   { label: 'Settings', path: '/settings', icon: '⚙️' },
 ];
 
-const NavGroup = ({ item }: { item: NavItem }) => {
+const NavGroup = ({ item, setIsOpen }: { item: NavItem, setIsOpen?: (v: boolean) => void }) => {
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -99,7 +99,7 @@ const NavGroup = ({ item }: { item: NavItem }) => {
       {open && (
         <div className="ml-4 mt-1 space-y-0.5">
           {item.children!.map(child => (
-            <NavLink key={child.path} to={child.path} className={({ isActive }) => `sidebar-link text-xs py-2 ${isActive ? 'active' : ''}`}>
+            <NavLink key={child.path} to={child.path} onClick={() => setIsOpen && setIsOpen(false)} className={({ isActive }) => `sidebar-link text-xs py-2 ${isActive ? 'active' : ''}`}>
               <span>{child.icon}</span>{child.label}
             </NavLink>
           ))}
@@ -109,7 +109,7 @@ const NavGroup = ({ item }: { item: NavItem }) => {
   );
 };
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -119,16 +119,19 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-40">
-      <div className="p-6 border-b border-white/10 flex-shrink-0">
-        <h1 className="text-white font-bold text-xl">⚡ OMS Portal</h1>
-        <p className="text-gray-400 text-xs mt-1">Order Management System</p>
+    <aside className={`w-64 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <div className="p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center">
+        <div>
+          <h1 className="text-white font-bold text-xl">⚡ OMS Portal</h1>
+          <p className="text-gray-400 text-xs mt-1">Order Management System</p>
+        </div>
+        <button className="lg:hidden text-white" onClick={() => setIsOpen && setIsOpen(false)}>✖</button>
       </div>
 
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto min-h-0">
         {navItems.map(item =>
-          item.children ? <NavGroup key={item.label} item={item} /> :
-          <NavLink key={item.path} to={item.path!} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          item.children ? <NavGroup key={item.label} item={item} setIsOpen={setIsOpen} /> :
+          <NavLink key={item.path} to={item.path!} onClick={() => setIsOpen && setIsOpen(false)} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <span>{item.icon}</span>{item.label}
           </NavLink>
         )}
