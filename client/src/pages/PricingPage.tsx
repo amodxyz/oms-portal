@@ -61,8 +61,8 @@ const plans = [
   },
   {
     name: 'Standard',
-    monthlyPrice: 999,
-    yearlyPrice: 9999,
+    monthlyPrice: 799,
+    yearlyPrice: 7999,
     color: 'border-blue-500',
     headerColor: 'bg-blue-600',
     textColor: 'text-white',
@@ -75,8 +75,8 @@ const plans = [
   },
   {
     name: 'Professional',
-    monthlyPrice: 2499,
-    yearlyPrice: 24999,
+    monthlyPrice: 999,
+    yearlyPrice: 9999,
     color: 'border-purple-200',
     headerColor: 'bg-purple-50',
     textColor: 'text-purple-700',
